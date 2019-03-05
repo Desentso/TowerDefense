@@ -10,6 +10,7 @@ object GUIState extends Enumeration {
 
 class Game() {
   private var state = GUIState.Start
+  val gameArea = new GameArea()
   var enemies = Buffer[(Int, Int)]((0, 0))
   
   def currentState = this.state

@@ -39,6 +39,8 @@ object GUI extends SimpleSwingApplication {
       override def paintComponent(g: Graphics2D): Unit = {
         g.clearRect(0, 0, width, height)
         
+        GameArea.draw(game.gameArea.area, g, width, height)
+        
         //g.setBackground()
         g.setColor(Color.RED)
         
