@@ -14,6 +14,11 @@ object GUI extends SimpleSwingApplication {
   var state = game.currentState
   
   def top = new MainFrame {
+    
+    def listenToBtn(btn: Button) = {
+      this.listenTo(btn)
+    }
+    
     title = "Tower Defense ABC"
 
     val width = 800
@@ -27,6 +32,8 @@ object GUI extends SimpleSwingApplication {
     val startGameBtn = new Button("Start Game")
     val loadGameBtn = new Button("Load Game")
     val exitGameBtn = new Button("Exit")
+    val tower1Btn = new Button("Tower 1")
+    val changeSpeedBtn = new Button(">")
 
     def startScreen: BoxPanel = new BoxPanel(Orientation.Vertical) {
       contents += startGameBtn
@@ -48,9 +55,19 @@ object GUI extends SimpleSwingApplication {
       }
     }
     
+    val gameScreenButtons: BoxPanel = new BoxPanel(Orientation.Horizontal) {
+      val exitGameBtn = new Button("Exit") // The other exit game btn is empty/garbage collected(?) after contents change
+      
+      contents += exitGameBtn
+      contents += tower1Btn
+      contents += changeSpeedBtn
+      
+      listenToBtn(exitGameBtn)
+    }
+    
     val gameScreen: BoxPanel = new BoxPanel(Orientation.Vertical) {
       contents += new gamePanel()
-      contents += exitGameBtn
+      contents += gameScreenButtons
     }
     
     val container: BoxPanel = new BoxPanel(Orientation.Vertical) {
@@ -60,6 +77,8 @@ object GUI extends SimpleSwingApplication {
     // Listen to buttons
     this.listenTo(startGameBtn)
     this.listenTo(exitGameBtn)
+    this.listenTo(tower1Btn)
+    this.listenTo(changeSpeedBtn)
     
     // Listen to game area clicks
     this.listenTo(gameScreen.mouse.clicks)
@@ -85,6 +104,15 @@ object GUI extends SimpleSwingApplication {
             
             gameLoop.start()
             
+          }
+          case "Tower 1" => println("Selected tower 1")
+          case ">" => {
+            println("Increase speed")
+            changeSpeedBtn.text = ">>"
+          }
+          case ">>" => {
+            println("Lower speed")
+            changeSpeedBtn.text = ">"
           }
           case "Exit" => System.exit(0)
         }
