@@ -39,12 +39,12 @@ object GUI extends SimpleSwingApplication {
       override def paintComponent(g: Graphics2D): Unit = {
         g.clearRect(0, 0, width, height)
         
-        GameArea.draw(game.gameArea.area, g, width, height)
+        GameArea.draw(game.gameArea.getArea, g, width, height)
         
         //g.setBackground()
-        g.setColor(Color.RED)
+        g.setColor(Constants.enemyColor)
         
-        game.enemies.foreach(enemy => g.fillRect(enemy._1, enemy._2, 10, 10))
+        game.enemies.foreach(enemy => g.fillRect(enemy.position.x, enemy.position.y, Constants.enemySize, Constants.enemySize))
       }
     }
     
@@ -54,9 +54,6 @@ object GUI extends SimpleSwingApplication {
     }
     
     val container: BoxPanel = new BoxPanel(Orientation.Vertical) {
-      println("State in container: " + state)
-      // Set the contents of the window
-
       contents += startScreen
     }
     
@@ -76,17 +73,10 @@ object GUI extends SimpleSwingApplication {
           case "Start Game" => {
             game.startGame()
             state = game.currentState
-            println("State in listener: " + state)
             
             container.contents -= startScreen
-            
-            container.revalidate()
-            container.repaint()
-            
             container.contents += gameScreen
 
-            top.repaint()
-            
             container.revalidate()
             container.repaint()
             
@@ -110,7 +100,6 @@ object GUI extends SimpleSwingApplication {
         
         gameScreen.revalidate()
         gameScreen.repaint()
-        //top.repaint()
         
         game.onTick()
       }
@@ -122,5 +111,4 @@ object GUI extends SimpleSwingApplication {
     //gameLoop.start()
   }
 }
-
 

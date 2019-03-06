@@ -11,4 +11,6 @@ class Coords(initX: Int, initY: Int) {
   def y(add: Int): Unit = {
     this.y += add
   }
+  
+  override def toString() = "(" + this.x + "," + this.y + ")"
 }

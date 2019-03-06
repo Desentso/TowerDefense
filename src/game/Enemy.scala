@@ -4,11 +4,28 @@ class Enemy() {
   var position: Coords = new Coords(0, 0)
   var health: Int = 100
   var speed: Double = 1.0
-  var distanceToGoal: Int = 100
+  var distanceToGoal: Int = 0
+  var pathPosition: Int = 0
+  var direction = Direction.none
   
   def shoot(damageDealt: Int) = {
     this.health -= damageDealt
   }
+  
+  def move(x: Int, y: Int) = {
+    this.position.x(x)
+    this.position.y(y)
+    
+    this.distanceToGoal -= x
+    this.distanceToGoal -= y
+  }
+  
+  def hasReachedEnd = (
+      this.position.y > Constants.windowHeight || 
+      this.position.y < 0 || 
+      this.position.x < 0 || 
+      this.position.x > Constants.windowWidth
+  )
   
 }
 
