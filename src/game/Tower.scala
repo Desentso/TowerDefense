@@ -5,6 +5,7 @@ abstract class Tower(val position: Coords, val game: Game) {
   var range: Int
   var rateOfFire: Double
   val towerType: String
+  var cost: Int
   
   def shoot() = {
     println(enemiesInRange.map(e => e.distanceToGoal))
@@ -24,6 +25,7 @@ class Tower1(position: Coords, game: Game) extends Tower(position, game) {
   var damage: Int = 10
   var range: Int = 50
   var rateOfFire: Double = 1.0
+  var cost: Int = 150
   val towerType = "Tower 1"
 }
 
@@ -31,5 +33,6 @@ class Tower2(position: Coords, game: Game) extends Tower(position, game) {
   var damage: Int = 8
   var range: Int = 100
   var rateOfFire: Double = 0.8
+  var cost: Int = 200
   val towerType = "Tower 2"
 }

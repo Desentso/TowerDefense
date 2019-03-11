@@ -13,12 +13,21 @@ class Game() {
   val gameArea = new GameArea()
   var enemies = Buffer[Enemy](new Enemy(), new Enemy(), new Enemy())
   var towers = Buffer[Tower]()
+  var player: Player = new Player()
   var currentLevel = 1
   var selectingTower = 0
-  
-  //gameArea.findPath()
-  
+
   def currentState = this.state
+  
+  def isGameOver = !this.player.isAlive
+  
+  def initGame() = {
+    
+  }
+  
+  def loadGame() = {
+    
+  }
   
   def startGame() = {
     this.state = GUIState.InGame
@@ -36,24 +45,31 @@ class Game() {
   
   def onMouseClick(src: Component, point: Point) = {
     println(point)
-    if (this.selectingTower != 0) {
-      this.placeTower(point)
+    val tower = this.getSelectedTower(point)
+    
+    if (this.selectingTower != 0 && player.hasCoinsToBuyTower(tower)) {
+      this.placeTower(tower)
       this.selectingTower = 0
     }
   }
   
   def selectedTower(towerID: Int) = this.selectingTower = towerID
   
-  def placeTower(point: Point) = {
+  def placeTower(tower: Tower) = {
+    towers += tower
+    player.towerBought(tower)
+  }
+  
+  def getSelectedTower(point: Point): Tower = {
     this.selectingTower match {
-      case 1 => towers += new Tower1(new Coords(point.x, point.y), this)
-      case 2 => towers += new Tower2(new Coords(point.x, point.y), this)
+      case 1 => new Tower1(new Coords(point.x, point.y), this)
+      case 2 => new Tower2(new Coords(point.x, point.y), this)
     }
   }
   
   def enemyDidReachEndOfPath(indexToBeRemoved: Int) = {
     this.enemies.remove(indexToBeRemoved)
-    //this.player
+    this.player.enemyDidReachEndOfPath()
   }
   
   private def initEnemies() = {

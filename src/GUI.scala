@@ -22,7 +22,7 @@ object GUI extends SimpleSwingApplication {
     title = "Tower Defense ABC"
 
     val width = 800
-    val height = 560
+    val height = 660
     
     // Set the width and height of the window
     minimumSize = new Dimension(width, height)
@@ -45,13 +45,12 @@ object GUI extends SimpleSwingApplication {
     class gamePanel extends Panel {
 
       override def paintComponent(g: Graphics2D): Unit = {
-        g.clearRect(0, 0, width, height)
+        g.clearRect(0, 0, Constants.gameAreaWidth, Constants.gameAreaHeight)
         
-        GameArea.draw(game.gameArea.getArea, g, width, height)
+        GameArea.draw(game.gameArea.getArea, g, Constants.gameAreaWidth, Constants.gameAreaHeight)
         
         //g.setBackground()
         g.setColor(Constants.enemyColor)
-        
         game.enemies.foreach(enemy => g.fillRect(enemy.position.x - (Constants.enemySize / 2), enemy.position.y - (Constants.enemySize / 2), Constants.enemySize, Constants.enemySize))
         
         g.setColor(Constants.towerColor)
@@ -70,7 +69,25 @@ object GUI extends SimpleSwingApplication {
       listenToBtn(exitGameBtn)
     }
     
+    val levelLabel = new Label("Level: " + game.currentLevel)
+    val healthLabel = new Label("  Health: " + game.player.health)
+    val coinsLabel = new Label("  Coins: " + game.player.coins)
+    
+    def updateLabels() = {
+      levelLabel.text = "Level: " + game.currentLevel
+      healthLabel.text = "  Health: " + game.player.health
+      coinsLabel.text = "  Coins: " + game.player.coins
+    }
+    
+    val gameScreenLabels: BoxPanel = new BoxPanel(Orientation.Horizontal) {
+      contents += levelLabel
+      contents += healthLabel
+      contents += coinsLabel
+
+    }
+    
     val gameScreen: BoxPanel = new BoxPanel(Orientation.Vertical) {
+      contents += gameScreenLabels
       contents += new gamePanel()
       contents += gameScreenButtons
     }
@@ -141,8 +158,16 @@ object GUI extends SimpleSwingApplication {
         
         gameScreen.revalidate()
         gameScreen.repaint()
+
+        updateLabels()
         
         game.onTick()
+        
+        if (game.isGameOver) {
+          (e.getSource.asInstanceOf[javax.swing.Timer]).stop()
+          // Render game over screen
+          
+        }
       }
     }
 

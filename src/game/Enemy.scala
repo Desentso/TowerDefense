@@ -21,10 +21,10 @@ class Enemy() {
   }
   
   def hasReachedEnd = (
-    this.position.y > Constants.windowHeight || 
+    this.position.y > Constants.gameAreaHeight || 
     this.position.y < 0 || 
     this.position.x < 0 || 
-    this.position.x > Constants.windowWidth
+    this.position.x > Constants.gameAreaWidth
   )
   
 }

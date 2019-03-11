@@ -1,0 +1,13 @@
+12.3 Checkpoint
+
+Lisätty perus käyttöliittymän luokkia (GUI ja GameAreaGUI), joissa Swingillä tehty pelialue ja muutamia komentonappuloita. 
+Lisätty Game, GameArea luokat, joihin toteuttu pelialue ja reitin löytäminen vihollisille. 
+Enemy luokka lisätty, vihollisten liikkuminen reittiä pitkin. 
+Tower luokka lisätty ja siihen toteutettu vihollisten löytäminen ja ampuminen, sekä Towerien valinta ja asettaminen pelialueelle. 
+Player luokka lisätty ja siihen perustoiminnallisuudet.
+
+Ei vielä testejä, muutenkuin manuaalisia ja println.
+
+Mahdollisia ongelmia, miten jakaa tietoja luokkien välillä esim. kun Game luokan muuttujia tarvitaan myös Tower, Player ja Enemy luokissa. Onko parempi toteuttaa nämä metodit Game luokkaan vai antaa Game luokka muiden luokkien parametriksi? Vertaa esim. Enemy ja Tower luokkia.
+
+Käytetty työmäärä 5-10 tuntia

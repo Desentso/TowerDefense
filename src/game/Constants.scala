@@ -8,11 +8,11 @@ object Constants {
   val enemyColor: Color = Color.RED
   val towerColor: Color = Color.BLUE
   
-  val windowWidth: Int = 800
-  val windowHeight: Int = 560
+  val gameAreaWidth: Int = 800
+  val gameAreaHeight: Int = 560
   
-  val tileWidth: Int = windowWidth / 7
-  val tileHeight: Int = windowHeight / 6
+  val tileWidth: Int = gameAreaWidth / 7
+  val tileHeight: Int = gameAreaHeight / 6
   
   val enemySize: Int = 10
   val towerSize: Int = 30
