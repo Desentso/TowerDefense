@@ -10,6 +10,7 @@ class Enemy() {
   
   def shoot(damageDealt: Int) = {
     this.health -= damageDealt
+    println("health: ", this.health)
   }
   
   def move(x: Int, y: Int) = {
@@ -17,14 +18,13 @@ class Enemy() {
     this.position.y(y)
     
     this.distanceToGoal -= x
-    this.distanceToGoal -= y
   }
   
   def hasReachedEnd = (
-      this.position.y > Constants.windowHeight || 
-      this.position.y < 0 || 
-      this.position.x < 0 || 
-      this.position.x > Constants.windowWidth
+    this.position.y > Constants.windowHeight || 
+    this.position.y < 0 || 
+    this.position.x < 0 || 
+    this.position.x > Constants.windowWidth
   )
   
 }

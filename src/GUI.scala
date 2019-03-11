@@ -33,6 +33,7 @@ object GUI extends SimpleSwingApplication {
     val loadGameBtn = new Button("Load Game")
     val exitGameBtn = new Button("Exit")
     val tower1Btn = new Button("Tower 1")
+    val tower2Btn = new Button("Tower 2")
     val changeSpeedBtn = new Button(">")
 
     def startScreen: BoxPanel = new BoxPanel(Orientation.Vertical) {
@@ -51,7 +52,10 @@ object GUI extends SimpleSwingApplication {
         //g.setBackground()
         g.setColor(Constants.enemyColor)
         
-        game.enemies.foreach(enemy => g.fillRect(enemy.position.x, enemy.position.y, Constants.enemySize, Constants.enemySize))
+        game.enemies.foreach(enemy => g.fillRect(enemy.position.x - (Constants.enemySize / 2), enemy.position.y - (Constants.enemySize / 2), Constants.enemySize, Constants.enemySize))
+        
+        g.setColor(Constants.towerColor)
+        game.towers.foreach(tower => g.fillRect(tower.position.x - (Constants.towerSize / 2), tower.position.y - (Constants.towerSize / 2), Constants.towerSize, Constants.towerSize))
       }
     }
     
@@ -60,6 +64,7 @@ object GUI extends SimpleSwingApplication {
       
       contents += exitGameBtn
       contents += tower1Btn
+      contents += tower2Btn
       contents += changeSpeedBtn
       
       listenToBtn(exitGameBtn)
@@ -78,6 +83,7 @@ object GUI extends SimpleSwingApplication {
     this.listenTo(startGameBtn)
     this.listenTo(exitGameBtn)
     this.listenTo(tower1Btn)
+    this.listenTo(tower2Btn)
     this.listenTo(changeSpeedBtn)
     
     // Listen to game area clicks
@@ -105,7 +111,14 @@ object GUI extends SimpleSwingApplication {
             gameLoop.start()
             
           }
-          case "Tower 1" => println("Selected tower 1")
+          case "Tower 1" => {
+            game.selectedTower(1)
+            println("Selected tower 1")
+          }
+          case "Tower 2" => {
+            game.selectedTower(2)
+            println("Selected tower 2")
+          }
           case ">" => {
             println("Increase speed")
             changeSpeedBtn.text = ">>"
@@ -117,7 +130,7 @@ object GUI extends SimpleSwingApplication {
           case "Exit" => System.exit(0)
         }
       }
-      //case scala.swing.event.MousePressed(src, point, _, _, _) => game.onMouseClick(src, point)
+      case scala.swing.event.MousePressed(src, point, _, _, _) => game.onMouseClick(src, point)
     }
     
     contents = container

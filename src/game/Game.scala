@@ -11,8 +11,10 @@ object GUIState extends Enumeration {
 class Game() {
   private var state = GUIState.Start
   val gameArea = new GameArea()
-  var enemies = Buffer[Enemy](new Enemy())
+  var enemies = Buffer[Enemy](new Enemy(), new Enemy(), new Enemy())
+  var towers = Buffer[Tower]()
   var currentLevel = 1
+  var selectingTower = 0
   
   //gameArea.findPath()
   
@@ -26,26 +28,42 @@ class Game() {
   }
   
   def onTick() = {
+    this.filterDeadEnemies()
     this.moveEnemies()
+    this.shootTowers()
     //println(this.enemies)
   }
   
   def onMouseClick(src: Component, point: Point) = {
     println(point)
+    if (this.selectingTower != 0) {
+      this.placeTower(point)
+      this.selectingTower = 0
+    }
   }
   
-  def enemyReachedEndOfPath(indexToBeRemoved: Int) = {
+  def selectedTower(towerID: Int) = this.selectingTower = towerID
+  
+  def placeTower(point: Point) = {
+    this.selectingTower match {
+      case 1 => towers += new Tower1(new Coords(point.x, point.y), this)
+      case 2 => towers += new Tower2(new Coords(point.x, point.y), this)
+    }
+  }
+  
+  def enemyDidReachEndOfPath(indexToBeRemoved: Int) = {
     this.enemies.remove(indexToBeRemoved)
     //this.player
   }
   
   private def initEnemies() = {
-    val totalDistance = gameArea.path.map(p => p.x).reduce(_ + _)
-    
-    enemies.foreach(enemy => {
-      enemy.move(0, Constants.tileHeight + (Constants.tileHeight / 2))
+    val totalDistance = gameArea.path.map(p => p.x * Constants.tileWidth).reduce(_ + _)
+    println(totalDistance)
+    enemies.zipWithIndex.foreach(p => {
+      val enemy = p._1
+      enemy.move(-p._2 * 10, Constants.tileHeight + (Constants.tileHeight / 2))
       this.enemyFirstDirection(enemy)
-      enemy.distanceToGoal = totalDistance
+      enemy.distanceToGoal = totalDistance + (p._2 * 10)
     })
   }
   
@@ -65,6 +83,8 @@ class Game() {
   }
   
   private def isLastTileForEnemy(enemy: Enemy) = (gameArea.path.length - 1) == enemy.pathPosition
+  
+  def filterDeadEnemies() = this.enemies = this.enemies.filter(enemy => enemy.health > 0)
   
   def moveEnemies() = {
     
@@ -106,7 +126,7 @@ class Game() {
           enemy.pathPosition += 1
         }
       } else if (isLastTileForEnemy(enemy) && enemy.hasReachedEnd) {
-        this.enemyReachedEndOfPath(pair._2)
+        this.enemyDidReachEndOfPath(pair._2)
       }
       
       val move = enemy.direction match {
@@ -119,6 +139,11 @@ class Game() {
       enemy.move(move._1, move._2)
     })
   }
+  
+  def shootTowers() = {
+    this.towers.foreach(tower => tower.shoot())
+  }
+  
 }
 
 object Direction {
