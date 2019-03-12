@@ -51,10 +51,18 @@ object GUI extends SimpleSwingApplication {
         
         //g.setBackground()
         g.setColor(Constants.enemyColor)
-        game.enemies.foreach(enemy => g.fillRect(enemy.position.x - (Constants.enemySize / 2), enemy.position.y - (Constants.enemySize / 2), Constants.enemySize, Constants.enemySize))
+        game.enemies.foreach(enemy => {
+          g.setColor(Color.BLACK)
+          g.fillRect(enemy.position.x - (Constants.enemySize / 2) - 1, enemy.position.y - (Constants.enemySize / 2) - 1, Constants.enemySize + 2, Constants.enemySize + 2)
+          g.setColor(Constants.enemyColor)
+          g.fillRect(enemy.position.x - (Constants.enemySize / 2), enemy.position.y - (Constants.enemySize / 2), Constants.enemySize, Constants.enemySize)
+        })
         
         g.setColor(Constants.towerColor)
-        game.towers.foreach(tower => g.fillRect(tower.position.x - (Constants.towerSize / 2), tower.position.y - (Constants.towerSize / 2), Constants.towerSize, Constants.towerSize))
+        game.towers.foreach(tower => {
+          g.fillRect(tower.position.x - (Constants.towerSize / 2), tower.position.y - (Constants.towerSize / 2), Constants.towerSize, Constants.towerSize)
+          g.drawOval(tower.position.x - tower.range, tower.position.y - tower.range, tower.range * 2, tower.range * 2)
+        })
       }
     }
     
@@ -69,14 +77,14 @@ object GUI extends SimpleSwingApplication {
       listenToBtn(exitGameBtn)
     }
     
-    val levelLabel = new Label("Level: " + game.currentLevel)
-    val healthLabel = new Label("  Health: " + game.player.health)
-    val coinsLabel = new Label("  Coins: " + game.player.coins)
+    val levelLabel = new Label("Level: " + (game.levelHandler.currentLevel + 1))
+    val healthLabel = new Label("   Health: " + game.player.health)
+    val coinsLabel = new Label("   Coins: " + game.player.coins)
     
     def updateLabels() = {
-      levelLabel.text = "Level: " + game.currentLevel
-      healthLabel.text = "  Health: " + game.player.health
-      coinsLabel.text = "  Coins: " + game.player.coins
+      levelLabel.text = "Level: " + (game.levelHandler.currentLevel + 1) 
+      healthLabel.text = "   Health: " + game.player.health
+      coinsLabel.text = "   Coins: " + game.player.coins
     }
     
     val gameScreenLabels: BoxPanel = new BoxPanel(Orientation.Horizontal) {

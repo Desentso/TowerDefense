@@ -13,8 +13,8 @@ class Game() {
   val gameArea = new GameArea()
   var enemies = Buffer[Enemy](new Enemy(), new Enemy(), new Enemy())
   var towers = Buffer[Tower]()
-  var player: Player = new Player()
-  var currentLevel = 1
+  val player: Player = new Player()
+  val levelHandler: Level = new Level()
   var selectingTower = 0
 
   def currentState = this.state
@@ -22,7 +22,8 @@ class Game() {
   def isGameOver = !this.player.isAlive
   
   def initGame() = {
-    
+    this.enemies = levelHandler.getEnemies()
+    this.initEnemies()
   }
   
   def loadGame() = {
@@ -31,24 +32,35 @@ class Game() {
   
   def startGame() = {
     this.state = GUIState.InGame
+    this.enemies = levelHandler.getEnemies()
     this.initEnemies()
     
     println("Start Game")
   }
   
   def onTick() = {
+    
     this.filterDeadEnemies()
     this.moveEnemies()
     this.shootTowers()
-    //println(this.enemies)
+    
+    if (this.hasLevelEnded) {
+      this.levelHandler.getReward()
+      this.levelHandler.nextLevel()
+      this.enemies = this.levelHandler.getEnemies()
+      this.initEnemies()
+    }
+
   }
+  
+  def hasLevelEnded = this.enemies.length == 0
   
   def onMouseClick(src: Component, point: Point) = {
     println(point)
     val tower = this.getSelectedTower(point)
     
-    if (this.selectingTower != 0 && player.hasCoinsToBuyTower(tower)) {
-      this.placeTower(tower)
+    if (this.selectingTower != 0 && gameArea.isPointOutsidePath(point) && player.hasCoinsToBuyTower(tower.get)) {
+      this.placeTower(tower.get)
       this.selectingTower = 0
     }
   }
@@ -60,10 +72,11 @@ class Game() {
     player.towerBought(tower)
   }
   
-  def getSelectedTower(point: Point): Tower = {
+  def getSelectedTower(point: Point): Option[Tower] = {
     this.selectingTower match {
-      case 1 => new Tower1(new Coords(point.x, point.y), this)
-      case 2 => new Tower2(new Coords(point.x, point.y), this)
+      case 0 => None
+      case 1 => new Some(new Tower1(new Coords(point.x, point.y), this))
+      case 2 => new Some(new Tower2(new Coords(point.x, point.y), this))
     }
   }
   
@@ -74,12 +87,15 @@ class Game() {
   
   private def initEnemies() = {
     val totalDistance = gameArea.path.map(p => p.x * Constants.tileWidth).reduce(_ + _)
-    println(totalDistance)
+    val random = new scala.util.Random
+    
     enemies.zipWithIndex.foreach(p => {
       val enemy = p._1
-      enemy.move(-p._2 * 10, Constants.tileHeight + (Constants.tileHeight / 2))
+      val offset = 4 + random.nextInt(15)
+      
+      enemy.move(-p._2 * offset, Constants.tileHeight + (Constants.tileHeight / 2))
       this.enemyFirstDirection(enemy)
-      enemy.distanceToGoal = totalDistance + (p._2 * 10)
+      enemy.distanceToGoal = totalDistance + (p._2 * offset)
     })
   }
   
@@ -100,7 +116,13 @@ class Game() {
   
   private def isLastTileForEnemy(enemy: Enemy) = (gameArea.path.length - 1) == enemy.pathPosition
   
-  def filterDeadEnemies() = this.enemies = this.enemies.filter(enemy => enemy.health > 0)
+  def filterDeadEnemies() = {
+    val enemiesBefore = this.enemies.length
+    this.enemies = this.enemies.filter(enemy => enemy.health > 0)
+    val enemiesAfter = this.enemies.length
+    
+    this.player.addCoins(enemiesBefore - enemiesAfter)
+  }
   
   def moveEnemies() = {
     
@@ -115,7 +137,6 @@ class Game() {
         
         if (((enemyX > ((currentTile.x * Constants.tileWidth) - (Constants.tileWidth / 2))) && enemy.direction == Direction.right) ||
             ((enemyX < ((currentTile.x * Constants.tileWidth) - (Constants.tileWidth / 2))) && enemy.direction == Direction.left)) {
-          println("change dir x")
           if (nextTile.y == currentTile.y) {
             enemy.direction
           } else {
@@ -128,7 +149,6 @@ class Game() {
           enemy.pathPosition += 1
         } else if (((enemyY > ((currentTile.y * Constants.tileHeight) - (Constants.tileHeight / 2))) && enemy.direction == Direction.down) || 
             ((enemyY < ((currentTile.y * Constants.tileHeight) - (Constants.tileHeight / 2))) && enemy.direction == Direction.up)) {
-          println("change dir y")
           if (nextTile.x == currentTile.x) {
             new Coords(0, nextTile.y - currentTile.y)
             enemy.direction
@@ -169,17 +189,3 @@ object Direction {
   val up = 3
   val down = 4
 }
-
-
-object Levels {
-  val enemies = Map(
-    1 -> Vector((0 to 100).toArray.map(i => new Enemy())),
-    5 -> Vector((0 to 100).toArray.map(i => new Enemy())),
-    10 -> Vector((0 to 100).toArray.map(i => new Enemy()))
-  )
-    
-  def getEnemies(level: Int) = {
-    
-  }
-}
-

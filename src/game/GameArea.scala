@@ -1,7 +1,7 @@
 package game
 
 import scala.collection.mutable.Buffer
-import scala.swing.Graphics2D
+import scala.swing.{Graphics2D, Point}
 
 class GameArea() {
   // Legend:
@@ -14,6 +14,7 @@ class GameArea() {
     Array(1, 1, 1, 1, 1, 1, 0),
     Array(0, 0, 0, 0, 0, 1, 0),
     Array(0, 0, 1, 1, 1, 1, 0),
+    Array(0, 0, 1, 0, 0, 0, 0),
     Array(0, 0, 1, 0, 0, 0, 0),
     Array(0, 0, 1, 0, 0, 0, 0),
   )
@@ -37,6 +38,14 @@ class GameArea() {
   }
   
   def getArea = this.area
+  
+  def isPointOutsidePath(point: Point) = {
+    val tileUnderPoint = this.path
+      .map(tile => new Coords((tile.x-1) * Constants.tileWidth, (tile.y-1) * Constants.tileHeight))
+      .find(tile => point.x > tile.x && point.x < tile.x + Constants.tileWidth && point.y > tile.y && point.y < tile.y + Constants.tileHeight)
+      
+    tileUnderPoint == None
+  }
   
   def addTower(x: Int, y: Int) = {
     this.area(y)(x) = 2

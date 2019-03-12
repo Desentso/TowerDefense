@@ -8,8 +8,9 @@ class Player() {
   
   def towerBought(tower: Tower) = this.coins -= tower.cost
   
-  def hasCoinsToBuyTower(tower: Tower) = this.coins > tower.cost
+  def hasCoinsToBuyTower(tower: Tower) = this.coins >= tower.cost
   
   def isAlive = this.health > 0
   
+  def addCoins(coins: Int) = this.coins += coins
 }

@@ -12,7 +12,7 @@ object Constants {
   val gameAreaHeight: Int = 560
   
   val tileWidth: Int = gameAreaWidth / 7
-  val tileHeight: Int = gameAreaHeight / 6
+  val tileHeight: Int = gameAreaHeight / 7
   
   val enemySize: Int = 10
   val towerSize: Int = 30
