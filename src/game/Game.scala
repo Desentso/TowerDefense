@@ -16,7 +16,8 @@ class Game() {
   val player: Player = new Player()
   val levelHandler: Level = new Level()
   var selectingTower = 0
-
+  var tick = 1
+  
   def currentState = this.state
   
   def isGameOver = !this.player.isAlive
@@ -42,7 +43,7 @@ class Game() {
     
     this.filterDeadEnemies()
     this.moveEnemies()
-    this.shootTowers()
+    this.shootTowers(tick)
     
     if (this.hasLevelEnded) {
       this.levelHandler.getReward()
@@ -50,7 +51,10 @@ class Game() {
       this.enemies = this.levelHandler.getEnemies()
       this.initEnemies()
     }
-
+    tick += 1
+    if (tick >= 10) {
+      tick = 1
+    }
   }
   
   def hasLevelEnded = this.enemies.length == 0
@@ -93,7 +97,7 @@ class Game() {
       val enemy = p._1
       val offset = 4 + random.nextInt(15)
       
-      enemy.move(-p._2 * offset, Constants.tileHeight + (Constants.tileHeight / 2))
+      enemy.move(-p._2 * offset, Constants.tileHeight + (Constants.tileHeight / 2), true)
       this.enemyFirstDirection(enemy)
       enemy.distanceToGoal = totalDistance + (p._2 * offset)
     })
@@ -176,8 +180,8 @@ class Game() {
     })
   }
   
-  def shootTowers() = {
-    this.towers.foreach(tower => tower.shoot())
+  def shootTowers(tick: Int) = {
+    this.towers.foreach(tower => tower.shoot(tick))
   }
   
 }

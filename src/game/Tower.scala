@@ -7,11 +7,14 @@ abstract class Tower(val position: Coords, val game: Game) {
   val towerType: String
   var cost: Int
   
-  def shoot() = {
-    val enemies = this.enemiesInRange
-    println(enemies.map(e => e.distanceToGoal))
-    println(enemies.lift(0))
-    enemies.lift(0).getOrElse(DummyEnemy).shoot(this.damage)
+  def shoot(tick: Int) = {
+    println(tick, 10.0 / (rateOfFire * 10), tick % (10.0 / (rateOfFire * 10)))
+    if (tick % (10.0 / (rateOfFire * 10)) < 1) {
+      val enemies = this.enemiesInRange
+      println(enemies.map(e => e.distanceToGoal))
+      println(enemies.lift(0))
+      enemies.lift(0).getOrElse(DummyEnemy).shoot(this.damage)
+    }
   }
   
   def enemiesInRange: Vector[Enemy] = {
@@ -26,7 +29,7 @@ abstract class Tower(val position: Coords, val game: Game) {
 class Tower1(position: Coords, game: Game) extends Tower(position, game) {
   var damage: Int = 10
   var range: Int = 75
-  var rateOfFire: Double = 1.0
+  var rateOfFire: Double = 0.9
   var cost: Int = 150
   val towerType = "Tower 1"
 }
@@ -34,7 +37,7 @@ class Tower1(position: Coords, game: Game) extends Tower(position, game) {
 class Tower2(position: Coords, game: Game) extends Tower(position, game) {
   var damage: Int = 8
   var range: Int = 100
-  var rateOfFire: Double = 0.8
+  var rateOfFire: Double = 0.7
   var cost: Int = 200
   val towerType = "Tower 2"
 }

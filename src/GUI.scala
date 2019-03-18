@@ -52,10 +52,13 @@ object GUI extends SimpleSwingApplication {
         //g.setBackground()
         g.setColor(Constants.enemyColor)
         game.enemies.foreach(enemy => {
+          val enemyX = math.round(enemy.position.x).toInt
+          val enemyY = math.round(enemy.position.y).toInt
+          
           g.setColor(Color.BLACK)
-          g.fillRect(enemy.position.x - (Constants.enemySize / 2) - 1, enemy.position.y - (Constants.enemySize / 2) - 1, Constants.enemySize + 2, Constants.enemySize + 2)
+          g.fillRect(enemyX - (Constants.enemySize / 2) - 1, enemyY - (Constants.enemySize / 2) - 1, Constants.enemySize + 2, Constants.enemySize + 2)
           g.setColor(Constants.enemyColor)
-          g.fillRect(enemy.position.x - (Constants.enemySize / 2), enemy.position.y - (Constants.enemySize / 2), Constants.enemySize, Constants.enemySize)
+          g.fillRect(enemyX - (Constants.enemySize / 2), enemyY - (Constants.enemySize / 2), Constants.enemySize, Constants.enemySize)
         })
         
         g.setColor(Constants.towerColor)
@@ -146,10 +149,16 @@ object GUI extends SimpleSwingApplication {
           }
           case ">" => {
             println("Increase speed")
+            gameLoop.stop()
+            gameLoop = new javax.swing.Timer(8, gameLoopEventListener)
+            gameLoop.start()
             changeSpeedBtn.text = ">>"
           }
           case ">>" => {
             println("Lower speed")
+            gameLoop.stop()
+            gameLoop = new javax.swing.Timer(16, gameLoopEventListener)
+            gameLoop.start()
             changeSpeedBtn.text = ">"
           }
           case "Exit" => System.exit(0)
@@ -181,7 +190,7 @@ object GUI extends SimpleSwingApplication {
 
     // This calls the gameLoopEventListener every 16ms
     // Which allows animation and dynamic screens
-    val gameLoop = new javax.swing.Timer(16, gameLoopEventListener)
+    var gameLoop = new javax.swing.Timer(16, gameLoopEventListener)
     //gameLoop.start()
   }
 }

@@ -1,7 +1,7 @@
 package game
 
 class Enemy(initSpeed: Double = 1.0, initHealth: Int = 150) {
-  var position: Coords = new Coords(0, 0)
+  var position: CoordsD = new CoordsD(0, 0)
   var health: Int = initHealth
   var speed: Double = initSpeed
   var distanceToGoal: Int = 0
@@ -13,9 +13,9 @@ class Enemy(initSpeed: Double = 1.0, initHealth: Int = 150) {
     println("Shot enemy, health:", this.health)
   }
   
-  def move(x: Int, y: Int) = {
-    this.position.x(x)
-    this.position.y(y)
+  def move(x: Int, y: Int, noSpeed: Boolean = false) = {
+    this.position.x(x * (if (noSpeed) 1 else this.speed))
+    this.position.y(y * (if (noSpeed) 1 else this.speed))
     
     this.distanceToGoal -= (math.abs(x) + math.abs(y))
   }
