@@ -10,6 +10,7 @@ object GUIState extends Enumeration {
 
 class Game() {
   private var state = GUIState.Start
+  val fileHandler = new FileHandler(this)
   val gameArea = new GameArea()
   var enemies = Buffer[Enemy](new Enemy(), new Enemy(), new Enemy())
   var towers = Buffer[Tower]()
@@ -31,6 +32,10 @@ class Game() {
     
   }
   
+  def saveGame() = {
+    fileHandler.saveGame()
+  }
+  
   def startGame() = {
     this.state = GUIState.InGame
     this.enemies = levelHandler.getEnemies()
@@ -46,6 +51,7 @@ class Game() {
     this.shootTowers(tick)
     
     if (this.hasLevelEnded) {
+      this.saveGame()
       this.levelHandler.getReward()
       this.levelHandler.nextLevel()
       this.enemies = this.levelHandler.getEnemies()
