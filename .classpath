@@ -4,13 +4,5 @@
 	<classpathentry kind="con" path="org.scala-ide.sdt.launching.SCALA_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/GraphicsLibraries"/>
-	<classpathentry kind="lib" path="C:/Users/Olli/Downloads/play-json_2.12-2.7.0.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Olli/Downloads/macro-compat_2.12-1.1.1.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Olli/Downloads/joda-time-2.10.1.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Olli/Downloads/jackson-datatype-jsr310-2.9.8.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Olli/Downloads/jackson-datatype-jdk8-2.9.8.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Olli/Downloads/jackson-databind-2.9.8.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Olli/Downloads/jackson-core-2.9.8.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Olli/Downloads/jackson-annotations-2.9.8.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
