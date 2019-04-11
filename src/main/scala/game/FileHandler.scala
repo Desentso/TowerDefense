@@ -26,46 +26,37 @@ class FileHandler(val game: Game) {
       )
     )
     
-    val saveJsonString = Json.stringify(saveJson)
-    println("PATH:", Paths.get(".").toAbsolutePath)
-    val outputFile = new File(Paths.get(".").toAbsolutePath + "/save_files/save_file_1.json")
+    val saveFileAsJSON = Json.prettyPrint(saveJson)
+    println(saveFileAsJSON)
+
+    val outputFile = new File(Paths.get(".").toAbsolutePath + "/save_file_1.json")
     val writer = new BufferedWriter(new FileWriter(outputFile))
-    writer.write(saveJsonString)
+    writer.write(saveFileAsJSON)
     writer.newLine()
     writer.flush()
     writer.close()
-    
-    println(saveJsonString)
   }
   
-  def loadGame() = {
+  def loadGame(): JsValue = {
     println("Load game")
-    val json: JsValue = Json.parse("""
-      {
-        "level": 5,
-        "coins": 550,
-        "healthLeft": 240,
-        "towers": [
-          {
-            "type": 2,
-            "damage": 8,
-            "range": 175,
-            "position": {"x": 150, "y": 250}
-          },
-          {
-            "type": 1,
-            "damage": 10,
-            "range": 150,
-            "position": {"x": 350, "y": 260}
-          }
-        ]
-      }
-      """
-    )
+    val saveFile = scala.io.Source.fromFile(Paths.get(".").toAbsolutePath + "/save_file_1.json")
+    val saveJSONString = try saveFile.getLines.mkString("\n") finally saveFile.close()
+
+    val json: JsValue = Json.parse(saveJSONString)
     
     val level = (json \ "level").as[Int]
-    
-    val jsonString = Json.stringify(json)
+
+    println(saveJSONString)
+    println("LEVEL: ", level)
+
+    json
   }
-  
+
+  def loadConfiguration() = {
+    val confFile = scala.io.Source.fromFile(Paths.get(".").toAbsolutePath + "/conf.json")
+
+    
+
+  }
+
 }

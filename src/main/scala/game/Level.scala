@@ -53,6 +53,8 @@ class Level() {
   
   def nextLevel() = this.currentLevel += 1
   
+  def setLevel(level: Int) = this.currentLevel = level
+
   def getEnemies(): Buffer[Enemy] = {
     val (baseNoOfEnemies, baseHealth, baseSpeed, _) = this.getCurrentBaseValues
     val enemySpeed = baseSpeed //* math.pow(enemySpeedMultiplier, currentLevel)

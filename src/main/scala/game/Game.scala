@@ -2,6 +2,7 @@ package game
 
 import scala.swing._
 import scala.collection.mutable.Buffer
+import play.api.libs.json._
 
 object GUIState extends Enumeration {
   type GUIState = Value
@@ -29,7 +30,24 @@ class Game() {
   }
   
   def loadGame() = {
-    fileHandler.loadGame()
+    val savedJson = fileHandler.loadGame()
+
+    player.reinitSavedPlayer(savedJson)
+    levelHandler.setLevel((savedJson \ "level").as[Int])
+    val savedTowers = (savedJson \ "towers").as[List[JsValue]]
+
+    this.towers = savedTowers.map(tower => {
+      val towerType = (tower \ "type").as[String]
+
+      val position = (tower \ "position").as[Map[String, Int]]
+
+      (towerType match {
+        case "Tower 1" => new Tower1(new Coords(position("x"), position("y")), this)
+        case "Tower 2" => new Tower2(new Coords(position("x"), position("y")), this)
+      })
+    }).toBuffer
+
+    println(this.towers)
   }
   
   def startGame() = {

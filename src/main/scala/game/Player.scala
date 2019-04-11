@@ -1,4 +1,5 @@
 package game
+import play.api.libs.json._
 
 class Player() {
   var coins: Int = 500
@@ -13,4 +14,10 @@ class Player() {
   def isAlive = this.health > 0
   
   def addCoins(coins: Int) = this.coins += coins
+
+  def reinitSavedPlayer(json: JsValue) = {
+    this.coins = (json \ "coins").as[Int]
+    this.health = (json \ "healthLeft").as[Int]
+  }
+
 }

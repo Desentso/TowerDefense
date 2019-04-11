@@ -106,9 +106,25 @@ object GUI extends SimpleSwingApplication {
     val container: BoxPanel = new BoxPanel(Orientation.Vertical) {
       contents += startScreen
     }
+
+    def startGame() = {
+      game.startGame()
+      state = game.currentState
+
+      container.contents -= startScreen
+      container.contents += gameScreen
+
+      container.revalidate()
+      container.repaint()
+
+      top.repaint()
+      
+      gameLoop.start()
+    }
     
     // Listen to buttons
     this.listenTo(startGameBtn)
+    this.listenTo(loadGameBtn)
     this.listenTo(exitGameBtn)
     this.listenTo(tower1Btn)
     this.listenTo(tower2Btn)
@@ -124,20 +140,11 @@ object GUI extends SimpleSwingApplication {
 
         btnText match {
           case "Start Game" => {
-            game.startGame()
-            state = game.currentState
-            
-            container.contents -= startScreen
-            container.contents += gameScreen
-
-            container.revalidate()
-            container.repaint()
-            
-            //top.validate()
-            top.repaint()
-            
-            gameLoop.start()
-            
+            startGame()
+          }
+          case "Load Game" => {
+            game.loadGame()
+            startGame()
           }
           case "Tower 1" => {
             game.selectedTower(1)

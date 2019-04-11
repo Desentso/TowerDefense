@@ -27,3 +27,11 @@ Mahdolliset ongelmat: Scalan dependency hallinnan järjettömyydet
 
 Käytetty työmäärä 5-10 tuntia
 
+
+8.4 Checkpoint
+
+Tallennustiedostojen tallennus ja luku tehty. Konfigurointitiedostojen lukua aloitettu.
+
+Ei vielä testejä, muutenkuin manuaalisia ja println.
+
+Käytetty työmäärä <5 tuntia
