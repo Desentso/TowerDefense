@@ -1,0 +1,16 @@
+{
+  "startCoins": 1000,
+  "startHealth": 250,
+
+  "towers": [
+    {"cost": 400, "damage": 8, "rateOfFire": 0.7, "range": 75},
+    {"cost": 500, "damage": 6, "rateOfFire": 0.7, "range": 100},
+    {"cost": 1000, "damage": 10, "rateOfFire": 0.8, "range": 150},
+    {"cost": 1000, "damage": 50, "rateOfFire": 0.1, "range": 400},
+    {"cost": 2500, "damage": 20, "rateOfFire": 1, "range": 250}
+  ],
+
+  "levelCompleteReward": 100,
+  "levelCompleteIncreaseRate": 1.005,
+  "enemyKilledReward": 1
+}

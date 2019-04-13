@@ -1,9 +1,7 @@
 package game
 import play.api.libs.json._
 
-class Player() {
-  var coins: Int = 500
-  var health: Int = 250
+class Player(var health: Int, var coins: Int) {
   
   def enemyDidReachEndOfPath() = this.health -= 1
   

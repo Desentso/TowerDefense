@@ -34,6 +34,9 @@ object GUI extends SimpleSwingApplication {
     val exitGameBtn = new Button("Exit")
     val tower1Btn = new Button("Tower 1")
     val tower2Btn = new Button("Tower 2")
+    val tower3Btn = new Button("Tower 3")
+    val tower4Btn = new Button("Tower 4")
+    val tower5Btn = new Button("Tower 5")
     val changeSpeedBtn = new Button(">")
 
     def startScreen: BoxPanel = new BoxPanel(Orientation.Vertical) {
@@ -42,7 +45,7 @@ object GUI extends SimpleSwingApplication {
       contents += exitGameBtn
     }
     
-    class gamePanel extends Panel {
+    class GamePanel extends Panel {
 
       override def paintComponent(g: Graphics2D): Unit = {
         g.clearRect(0, 0, Constants.gameAreaWidth, Constants.gameAreaHeight)
@@ -80,12 +83,12 @@ object GUI extends SimpleSwingApplication {
       listenToBtn(exitGameBtn)
     }
     
-    val levelLabel = new Label("Level: " + (game.levelHandler.currentLevel + 1))
+    val levelLabel = new Label("Level: " + (game.levelHandler.currentLevel))
     val healthLabel = new Label("   Health: " + game.player.health)
     val coinsLabel = new Label("   Coins: " + game.player.coins)
     
     def updateLabels() = {
-      levelLabel.text = "Level: " + (game.levelHandler.currentLevel + 1) 
+      levelLabel.text = "Level: " + (game.levelHandler.currentLevel) 
       healthLabel.text = "   Health: " + game.player.health
       coinsLabel.text = "   Coins: " + game.player.coins
     }
@@ -99,7 +102,7 @@ object GUI extends SimpleSwingApplication {
     
     val gameScreen: BoxPanel = new BoxPanel(Orientation.Vertical) {
       contents += gameScreenLabels
-      contents += new gamePanel()
+      contents += new GamePanel()
       contents += gameScreenButtons
     }
     
@@ -128,6 +131,9 @@ object GUI extends SimpleSwingApplication {
     this.listenTo(exitGameBtn)
     this.listenTo(tower1Btn)
     this.listenTo(tower2Btn)
+    this.listenTo(tower3Btn)
+    this.listenTo(tower4Btn)
+    this.listenTo(tower5Btn)
     this.listenTo(changeSpeedBtn)
     
     // Listen to game area clicks
@@ -153,6 +159,18 @@ object GUI extends SimpleSwingApplication {
           case "Tower 2" => {
             game.selectedTower(2)
             println("Selected tower 2")
+          }
+          case "Tower 3" => {
+            game.selectedTower(3)
+            println("Selected tower 3")
+          }
+          case "Tower 4" => {
+            game.selectedTower(4)
+            println("Selected tower 4")
+          }
+          case "Tower 5" => {
+            game.selectedTower(5)
+            println("Selected tower 5")
           }
           case ">" => {
             println("Increase speed")

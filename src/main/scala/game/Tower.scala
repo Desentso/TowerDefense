@@ -1,11 +1,8 @@
 package game
 
-abstract class Tower(val position: Coords, val game: Game) {
-  var damage: Int 
-  var range: Int
-  var rateOfFire: Double
-  val towerType: String
-  var cost: Int
+import play.api.libs.json._
+
+class Tower(val damage: Int, val range: Int, val rateOfFire: Double, val cost: Int, val towerType: String, val position: Coords, val game: Game) {
   
   def shoot(tick: Int) = {
     //println(tick, 10.0 / (rateOfFire * 10), tick % (10.0 / (rateOfFire * 10)))
@@ -25,19 +22,33 @@ abstract class Tower(val position: Coords, val game: Game) {
   }
 }
 
+class TowerConf(val range: Int, val damage: Int, val cost: Int, val rateOfFire: Double) {}
 
-class Tower1(position: Coords, game: Game) extends Tower(position, game) {
-  var damage: Int = 10
-  var range: Int = 75
-  var rateOfFire: Double = 0.9
-  var cost: Int = 150
-  val towerType = "Tower 1"
-}
+class Towers(val game: Game, towersAsJson: List[JsValue]) {
 
-class Tower2(position: Coords, game: Game) extends Tower(position, game) {
-  var damage: Int = 8
-  var range: Int = 100
-  var rateOfFire: Double = 0.7
-  var cost: Int = 200
-  val towerType = "Tower 2"
+  val towers: Map[Int, TowerConf] = towersAsJson.zipWithIndex.map(p => {
+    val tower = p._1
+    val index = p._2
+
+    val range = (tower \ "range").as[Int]
+    val damage = (tower \ "damage").as[Int]
+    val cost = (tower \ "cost").as[Int]
+    val rateOfFire = (tower \ "rateOfFire").as[Double]
+
+    (index + 1, new TowerConf(range, damage, cost, rateOfFire))
+  }).toMap
+
+  def getTower(towerType: Int, coords: Coords = new Coords(0, 0)): Option[Tower] = {
+    val towerConfOption = towers.get(towerType)
+
+    if (towerConfOption != None) {
+      val towerConf = towerConfOption.get
+      Some(new Tower(towerConf.damage, towerConf.range, towerConf.rateOfFire, towerConf.cost, towerType.toString, coords, game))
+    } else {
+      None
+    }
+  }
+
+
+
 }

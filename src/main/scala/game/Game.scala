@@ -10,24 +10,40 @@ object GUIState extends Enumeration {
 }
 
 class Game() {
-  private var state = GUIState.Start
   val fileHandler = new FileHandler(this)
+
+  val (startHealth, startCoins, levelCompleteReward, levelCompleteIncreaseRate, enemyKilledReward, towersAsJson) = this.loadConfiguration()
+
+  private var state = GUIState.Start
+  val random = new scala.util.Random
+
+  val levelHandler: Level = new Level(levelCompleteReward, levelCompleteIncreaseRate)
+  val player: Player = new Player(startHealth, startCoins)
+  val towerHandler: Towers = new Towers(this, towersAsJson)
+
   val gameArea = new GameArea()
-  var enemies = Buffer[Enemy](new Enemy(), new Enemy(), new Enemy())
+  var enemies = Buffer[Enemy]()
   var towers = Buffer[Tower]()
-  val player: Player = new Player()
-  val levelHandler: Level = new Level()
+  
   var selectingTower = 0
   var tick = 1
-  
+
+  def loadConfiguration() = {
+    val confJson = this.fileHandler.loadConfiguration()
+
+    val startHealth = (confJson \ "startHealth").as[Int]
+    val startCoins = (confJson \ "startCoins").as[Int]
+    val levelCompleteReward = (confJson \ "levelCompleteReward").as[Int]
+    val levelCompleteIncreaseRate = (confJson \ "levelCompleteIncreaseRate").as[Double]
+    val enemyKilledReward = (confJson \ "enemyKilledReward").as[Int]
+    val towersAsJson = (confJson \ "towers").as[List[JsValue]]
+
+    (startHealth, startCoins, levelCompleteReward, levelCompleteIncreaseRate, enemyKilledReward, towersAsJson)
+  }
+
   def currentState = this.state
   
   def isGameOver = !this.player.isAlive
-  
-  def initGame() = {
-    this.enemies = levelHandler.getEnemies()
-    this.initEnemies()
-  }
   
   def loadGame() = {
     val savedJson = fileHandler.loadGame()
@@ -42,9 +58,9 @@ class Game() {
       val position = (tower \ "position").as[Map[String, Int]]
 
       (towerType match {
-        case "Tower 1" => new Tower1(new Coords(position("x"), position("y")), this)
-        case "Tower 2" => new Tower2(new Coords(position("x"), position("y")), this)
-      })
+        case "Tower 1" => this.towerHandler.getTower(1)
+        case "Tower 2" => this.towerHandler.getTower(2)
+      }).get
     }).toBuffer
 
     println(this.towers)
@@ -101,11 +117,7 @@ class Game() {
   }
   
   def getSelectedTower(point: Point): Option[Tower] = {
-    this.selectingTower match {
-      case 0 => None
-      case 1 => new Some(new Tower1(new Coords(point.x, point.y), this))
-      case 2 => new Some(new Tower2(new Coords(point.x, point.y), this))
-    }
+    this.towerHandler.getTower(this.selectingTower, new Coords(point.x, point.y))
   }
   
   def enemyDidReachEndOfPath(indexToBeRemoved: Int) = {
@@ -115,8 +127,7 @@ class Game() {
   
   private def initEnemies() = {
     val totalDistance = gameArea.path.map(p => p.x * Constants.tileWidth).reduce(_ + _)
-    val random = new scala.util.Random
-    
+
     enemies.zipWithIndex.foreach(p => {
       val enemy = p._1
       val offset = 4 + random.nextInt(15)
@@ -149,7 +160,7 @@ class Game() {
     this.enemies = this.enemies.filter(enemy => enemy.health > 0)
     val enemiesAfter = this.enemies.length
     
-    this.player.addCoins(enemiesBefore - enemiesAfter)
+    this.player.addCoins((enemiesBefore - enemiesAfter) * this.enemyKilledReward)
   }
   
   def moveEnemies() = {

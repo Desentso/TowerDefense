@@ -1,126 +1,22 @@
 {
-  "level" : 18,
-  "coins" : 14152,
-  "healthLeft" : 233,
+  "level" : 3,
+  "coins" : 256,
+  "healthLeft" : 124,
   "towers" : [ {
-    "type" : "Tower 2",
-    "damage" : 8,
+    "type" : "2",
+    "damage" : 6,
     "range" : 100,
     "position" : {
-      "x" : 269,
-      "y" : 188
+      "x" : 281,
+      "y" : 208
     }
   }, {
-    "type" : "Tower 2",
-    "damage" : 8,
+    "type" : "2",
+    "damage" : 6,
     "range" : 100,
-    "position" : {
-      "x" : 548,
-      "y" : 187
-    }
-  }, {
-    "type" : "Tower 1",
-    "damage" : 10,
-    "range" : 75,
     "position" : {
       "x" : 550,
-      "y" : 236
-    }
-  }, {
-    "type" : "Tower 2",
-    "damage" : 8,
-    "range" : 100,
-    "position" : {
-      "x" : 533,
-      "y" : 177
-    }
-  }, {
-    "type" : "Tower 2",
-    "damage" : 8,
-    "range" : 100,
-    "position" : {
-      "x" : 497,
-      "y" : 239
-    }
-  }, {
-    "type" : "Tower 2",
-    "damage" : 8,
-    "range" : 100,
-    "position" : {
-      "x" : 691,
-      "y" : 149
-    }
-  }, {
-    "type" : "Tower 2",
-    "damage" : 8,
-    "range" : 100,
-    "position" : {
-      "x" : 329,
-      "y" : 210
-    }
-  }, {
-    "type" : "Tower 2",
-    "damage" : 8,
-    "range" : 100,
-    "position" : {
-      "x" : 694,
-      "y" : 285
-    }
-  }, {
-    "type" : "Tower 2",
-    "damage" : 8,
-    "range" : 100,
-    "position" : {
-      "x" : 590,
-      "y" : 354
-    }
-  }, {
-    "type" : "Tower 2",
-    "damage" : 8,
-    "range" : 100,
-    "position" : {
-      "x" : 526,
-      "y" : 226
-    }
-  }, {
-    "type" : "Tower 2",
-    "damage" : 8,
-    "range" : 100,
-    "position" : {
-      "x" : 469,
-      "y" : 182
-    }
-  }, {
-    "type" : "Tower 2",
-    "damage" : 8,
-    "range" : 100,
-    "position" : {
-      "x" : 403,
-      "y" : 188
-    }
-  }, {
-    "type" : "Tower 2",
-    "damage" : 8,
-    "range" : 100,
-    "position" : {
-      "x" : 352,
-      "y" : 336
-    }
-  }, {
-    "type" : "Tower 2",
-    "damage" : 8,
-    "range" : 100,
-    "position" : {
-      "x" : 419,
-      "y" : 339
-    }
-  }, {
-    "type" : "Tower 2",
-    "damage" : 8,
-    "range" : 100,
-    "position" : {
-      "x" : 428,
-      "y" : 230
+      "y" : 187
     }
   } ]
 }

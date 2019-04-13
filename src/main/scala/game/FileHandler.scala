@@ -42,20 +42,23 @@ class FileHandler(val game: Game) {
     val saveFile = scala.io.Source.fromFile(Paths.get(".").toAbsolutePath + "/save_file_1.json")
     val saveJSONString = try saveFile.getLines.mkString("\n") finally saveFile.close()
 
-    val json: JsValue = Json.parse(saveJSONString)
-    
-    val level = (json \ "level").as[Int]
+    val saveFileAsJSON: JsValue = Json.parse(saveJSONString)
 
     println(saveJSONString)
-    println("LEVEL: ", level)
 
-    json
+    saveFileAsJSON
   }
 
   def loadConfiguration() = {
     val confFile = scala.io.Source.fromFile(Paths.get(".").toAbsolutePath + "/conf.json")
 
-    
+    val confJSONString = try confFile.getLines.mkString("\n") finally confFile.close()
+
+    val confFileAsJSON: JsValue = Json.parse(confJSONString)
+
+    println(confJSONString)
+
+    confFileAsJSON
 
   }
 
