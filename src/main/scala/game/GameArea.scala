@@ -10,13 +10,13 @@ class GameArea() {
   //  2 turret
   // For now just one hardcoded map, though should be easily expandable with e.g. files
   private val area = Array(
-    Array(0, 0, 0, 0, 0, 0, 0),
-    Array(1, 1, 1, 1, 1, 1, 0),
+    Array(0, 1, 0, 0, 0, 0, 0),
+    Array(0, 1, 1, 1, 1, 1, 0),
     Array(0, 0, 0, 0, 0, 1, 0),
-    Array(0, 0, 1, 1, 1, 1, 0),
-    Array(0, 0, 1, 0, 0, 0, 0),
-    Array(0, 0, 1, 0, 0, 0, 0),
-    Array(0, 0, 1, 0, 0, 0, 0),
+    Array(0, 1, 1, 1, 1, 1, 0),
+    Array(0, 1, 0, 0, 0, 0, 0),
+    Array(0, 1, 0, 0, 0, 0, 0),
+    Array(0, 1, 0, 0, 0, 0, 0),
   )
   
   val path = {

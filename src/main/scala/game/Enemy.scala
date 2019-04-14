@@ -14,8 +14,9 @@ class Enemy(initSpeed: Double = 1.0, initHealth: Int = 150) {
   }
   
   def move(x: Int, y: Int, noSpeed: Boolean = false) = {
-    this.position.x(x * (if (noSpeed) 1 else this.speed))
-    this.position.y(y * (if (noSpeed) 1 else this.speed))
+    val actualSpeed = (if (noSpeed) 1 else this.speed)
+    this.position.x(x * actualSpeed)
+    this.position.y(y * actualSpeed)
     
     this.distanceToGoal -= (math.abs(x) + math.abs(y))
   }

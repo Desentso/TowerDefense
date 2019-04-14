@@ -78,6 +78,9 @@ object GUI extends SimpleSwingApplication {
       contents += exitGameBtn
       contents += tower1Btn
       contents += tower2Btn
+      contents += tower3Btn
+      contents += tower4Btn
+      contents += tower5Btn
       contents += changeSpeedBtn
       
       listenToBtn(exitGameBtn)
@@ -97,7 +100,6 @@ object GUI extends SimpleSwingApplication {
       contents += levelLabel
       contents += healthLabel
       contents += coinsLabel
-
     }
     
     val gameScreen: BoxPanel = new BoxPanel(Orientation.Vertical) {

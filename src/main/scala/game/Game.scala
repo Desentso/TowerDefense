@@ -127,30 +127,38 @@ class Game() {
   
   private def initEnemies() = {
     val totalDistance = gameArea.path.map(p => p.x * Constants.tileWidth).reduce(_ + _)
+    val firstTile = gameArea.path(0)
 
     enemies.zipWithIndex.foreach(p => {
       val enemy = p._1
       val offset = 4 + random.nextInt(15)
       
-      enemy.move(-p._2 * offset, Constants.tileHeight + (Constants.tileHeight / 2), true)
-      this.enemyFirstDirection(enemy)
+      val firstDirection = this.getEnemyFirstDirection(enemy)
+      //enemy.move(-p._2 * offset, Constants.tileHeight + (Constants.tileHeight / 2), true)
+      if (firstDirection == Direction.right) {
+        enemy.move(-p._2 * offset, ((firstTile.y - 1) * Constants.tileHeight) + (Constants.tileHeight / 2), true)
+      } else if (firstDirection == Direction.down) {
+        enemy.move(((firstTile.x - 1) * Constants.tileWidth) + (Constants.tileWidth / 2), -p._2 * offset, true)
+      } 
+
+      enemy.direction = firstDirection
       enemy.distanceToGoal = totalDistance + (p._2 * offset)
     })
   }
   
-  private def enemyFirstDirection(enemy: Enemy) = {
+  private def getEnemyFirstDirection(enemy: Enemy) = {
     val currentTile = gameArea.path(enemy.pathPosition)
     val nextTile = gameArea.path(enemy.pathPosition + 1)
     
-    if (enemy.direction == Direction.none) {
+    //if (enemy.direction == Direction.none) {
       //println((nextTile.x - currentTile.x, nextTile.y - currentTile.y))
-      enemy.direction = (nextTile.x - currentTile.x, nextTile.y - currentTile.y) match {
-        case (1, 0) => Direction.right
-        case (-1, 0) => Direction.left
-        case (0, 1) => Direction.down
-        case (0, -1) => Direction.up
-      }
+    (nextTile.x - currentTile.x, nextTile.y - currentTile.y) match {
+      case (1, 0) => Direction.right
+      case (-1, 0) => Direction.left
+      case (0, 1) => Direction.down
+      case (0, -1) => Direction.up
     }
+    //}
   }
   
   private def isLastTileForEnemy(enemy: Enemy) = (gameArea.path.length - 1) == enemy.pathPosition
