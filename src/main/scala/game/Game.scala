@@ -1,5 +1,6 @@
 package game
 
+import scala.util.control.NonFatal
 import scala.swing._
 import scala.collection.mutable.Buffer
 import play.api.libs.json._
@@ -45,25 +46,36 @@ class Game() {
   
   def isGameOver = !this.player.isAlive
   
-  def loadGame() = {
-    val savedJson = fileHandler.loadGame()
+  def loadGame(): Boolean = {
+    try {
+      val savedJson = fileHandler.loadGame()
 
-    player.reinitSavedPlayer(savedJson)
-    levelHandler.setLevel((savedJson \ "level").as[Int])
-    val savedTowers = (savedJson \ "towers").as[List[JsValue]]
+      player.reinitSavedPlayer(savedJson)
+      levelHandler.setLevel((savedJson \ "level").as[Int])
+      val savedTowers = (savedJson \ "towers").as[List[JsValue]]
 
-    this.towers = savedTowers.map(tower => {
-      val towerType = (tower \ "type").as[String]
+      this.towers = savedTowers.map(tower => {
+        val towerType = (tower \ "type").as[String]
 
-      val position = (tower \ "position").as[Map[String, Int]]
+        val position = (tower \ "position").as[Map[String, Int]]
 
-      (towerType match {
-        case "Tower 1" => this.towerHandler.getTower(1)
-        case "Tower 2" => this.towerHandler.getTower(2)
-      }).get
-    }).toBuffer
+        (towerType match {
+          case "1" => this.towerHandler.getTower(1, new Coords(position("x"), position("y")))
+          case "2" => this.towerHandler.getTower(2, new Coords(position("x"), position("y")))
+          case "3" => this.towerHandler.getTower(3, new Coords(position("x"), position("y")))
+          case "4" => this.towerHandler.getTower(4, new Coords(position("x"), position("y")))
+          case "5" => this.towerHandler.getTower(5, new Coords(position("x"), position("y")))
+        }).get
+      }).toBuffer
 
-    println(this.towers)
+      println(this.towers)
+      true
+    } catch {
+      case NonFatal(err) => {
+        println(err)
+        false
+      }
+    }
   }
   
   def startGame() = {
@@ -85,7 +97,7 @@ class Game() {
     this.shootTowers(tick)
     
     if (this.hasLevelEnded) {
-      this.levelHandler.getReward()
+      this.player.addCoins(this.levelHandler.getReward())
       this.levelHandler.nextLevel()
       this.enemies = this.levelHandler.getEnemies()
       this.initEnemies()
@@ -125,16 +137,15 @@ class Game() {
     this.player.enemyDidReachEndOfPath()
   }
   
-  private def initEnemies() = {
+  def initEnemies() = {
     val totalDistance = gameArea.path.map(p => p.x * Constants.tileWidth).reduce(_ + _)
     val firstTile = gameArea.path(0)
 
     enemies.zipWithIndex.foreach(p => {
       val enemy = p._1
-      val offset = 4 + random.nextInt(15)
+      val offset = 4 + random.nextInt(12)
       
       val firstDirection = this.getEnemyFirstDirection(enemy)
-      //enemy.move(-p._2 * offset, Constants.tileHeight + (Constants.tileHeight / 2), true)
       if (firstDirection == Direction.right) {
         enemy.move(-p._2 * offset, ((firstTile.y - 1) * Constants.tileHeight) + (Constants.tileHeight / 2), true)
       } else if (firstDirection == Direction.down) {
@@ -150,15 +161,12 @@ class Game() {
     val currentTile = gameArea.path(enemy.pathPosition)
     val nextTile = gameArea.path(enemy.pathPosition + 1)
     
-    //if (enemy.direction == Direction.none) {
-      //println((nextTile.x - currentTile.x, nextTile.y - currentTile.y))
     (nextTile.x - currentTile.x, nextTile.y - currentTile.y) match {
       case (1, 0) => Direction.right
       case (-1, 0) => Direction.left
       case (0, 1) => Direction.down
       case (0, -1) => Direction.up
     }
-    //}
   }
   
   private def isLastTileForEnemy(enemy: Enemy) = (gameArea.path.length - 1) == enemy.pathPosition
@@ -172,7 +180,7 @@ class Game() {
   }
   
   def moveEnemies() = {
-    
+    val enemiesReachedEnd = Buffer()
     this.enemies.zipWithIndex.foreach(pair => {
       val enemy = pair._1
       if (!isLastTileForEnemy(enemy)) {

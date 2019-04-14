@@ -38,11 +38,13 @@ object GUI extends SimpleSwingApplication {
     val tower4Btn = new Button("Tower 4")
     val tower5Btn = new Button("Tower 5")
     val changeSpeedBtn = new Button(">")
+    val notificationsLabel = new Label("")
 
     def startScreen: BoxPanel = new BoxPanel(Orientation.Vertical) {
       contents += startGameBtn
       contents += loadGameBtn
       contents += exitGameBtn
+      contents += notificationsLabel
     }
     
     class GamePanel extends Panel {
@@ -95,11 +97,16 @@ object GUI extends SimpleSwingApplication {
       healthLabel.text = "   Health: " + game.player.health
       coinsLabel.text = "   Coins: " + game.player.coins
     }
+
+    def newNotification(notificationText: String) = {
+      notificationsLabel.text = "   " + notificationText
+    }
     
     val gameScreenLabels: BoxPanel = new BoxPanel(Orientation.Horizontal) {
       contents += levelLabel
       contents += healthLabel
       contents += coinsLabel
+      contents += notificationsLabel
     }
     
     val gameScreen: BoxPanel = new BoxPanel(Orientation.Vertical) {
@@ -151,8 +158,12 @@ object GUI extends SimpleSwingApplication {
             startGame()
           }
           case "Load Game" => {
-            game.loadGame()
-            startGame()
+            val loadedSuccesfully = game.loadGame()
+            if (loadedSuccesfully) {
+              startGame()
+            } else {
+              newNotification("There was an error while loading the game. You have to either fix the save file manually or start a new game.")
+            }
           }
           case "Tower 1" => {
             game.selectedTower(1)

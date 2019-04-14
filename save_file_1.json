@@ -1,22 +1,14 @@
 {
-  "level" : 3,
-  "coins" : 250,
-  "healthLeft" : 118,
+  "level" : 2,
+  "coins" : 1101,
+  "healthLeft" : 250,
   "towers" : [ {
-    "type" : "2",
-    "damage" : 6,
-    "range" : 100,
+    "type" : "testTower",
+    "damage" : 100,
+    "range" : 1000,
     "position" : {
-      "x" : 549,
-      "y" : 184
-    }
-  }, {
-    "type" : "2",
-    "damage" : 6,
-    "range" : 100,
-    "position" : {
-      "x" : 176,
-      "y" : 211
+      "x" : 0,
+      "y" : 0
     }
   } ]
 }

@@ -64,7 +64,7 @@ class Level(private val baseReward: Int, private val rewardMultiplier: Double) {
     ((0 to enemiesTotal).map(i => new Enemy(enemySpeed, enemyHealth))).toBuffer
   }
   
-  def getReward() = {
-    baseReward * math.pow(rewardMultiplier, currentLevel)
+  def getReward(): Int = {
+    (baseReward * math.pow(rewardMultiplier, currentLevel)).toInt
   }
 }
