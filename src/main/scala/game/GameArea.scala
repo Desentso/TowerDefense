@@ -50,15 +50,5 @@ class GameArea() {
   def addTower(x: Int, y: Int) = {
     this.area(y)(x) = 2
   }
-  
-  // Movement
-  // Prefers from left to right, top to down
-  
-  def getNextStepForEnemy(coords: Coords) = {
-    // Get adjacent tiles
-    val adjacentTiles = this.area.slice(coords.y - 1, coords.y + 1).map(row => row.slice(coords.x - 1, coords.x + 1))
-    //this.area.lift(coords.y + 1).getOrElse(Vector[Int]()).lift(coords.x + 1)
-    this.area
-  }
 
 }

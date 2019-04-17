@@ -5,11 +5,8 @@ import play.api.libs.json._
 class Tower(val damage: Int, val range: Int, val rateOfFire: Double, val cost: Int, val towerType: String, val position: Coords, val game: Game) {
   
   def shoot(tick: Int) = {
-    //println(tick, 10.0 / (rateOfFire * 10), tick % (10.0 / (rateOfFire * 10)))
     if (tick % (10.0 / (rateOfFire * 10)) < 1) {
       val enemies = this.enemiesInRange
-      //println(enemies.map(e => e.distanceToGoal))
-      //println(enemies.lift(0))
       enemies.lift(0).getOrElse(DummyEnemy).shoot(this.damage)
     }
   }

@@ -5,17 +5,11 @@ import scala.swing._
 import scala.collection.mutable.Buffer
 import play.api.libs.json._
 
-object GUIState extends Enumeration {
-  type GUIState = Value
-  val Start, InGame, Paused = Value
-}
-
 class Game() {
   val fileHandler = new FileHandler(this)
 
   val (startHealth, startCoins, levelCompleteReward, levelCompleteIncreaseRate, enemyKilledReward, towersAsJson) = this.loadConfiguration()
 
-  private var state = GUIState.Start
   val random = new scala.util.Random
 
   val levelHandler: Level = new Level(levelCompleteReward, levelCompleteIncreaseRate)
@@ -28,8 +22,11 @@ class Game() {
   
   var selectingTower = 0
   var tick = 1
+  var notification = ""
+  var notificationTicks = 0
 
   def loadConfiguration() = {
+    // Load and setup the game from a configuration file
     val confJson = this.fileHandler.loadConfiguration()
 
     val startHealth = (confJson \ "startHealth").as[Int]
@@ -41,12 +38,11 @@ class Game() {
 
     (startHealth, startCoins, levelCompleteReward, levelCompleteIncreaseRate, enemyKilledReward, towersAsJson)
   }
-
-  def currentState = this.state
   
   def isGameOver = !this.player.isAlive
   
   def loadGame(): Boolean = {
+    // Load and setup the game from save file
     try {
       val savedJson = fileHandler.loadGame()
 
@@ -79,7 +75,6 @@ class Game() {
   }
   
   def startGame() = {
-    this.state = GUIState.InGame
     this.enemies = levelHandler.getEnemies()
     this.initEnemies()
     
@@ -91,7 +86,8 @@ class Game() {
   }
   
   def onTick() = {
-    
+    // This function is called every "tick", basically every 16ms or 8ms
+    // Handles the core game logic
     this.filterDeadEnemies()
     this.moveEnemies()
     this.shootTowers(tick)
@@ -103,24 +99,51 @@ class Game() {
       this.initEnemies()
       this.saveGame()
     }
+
     tick += 1
     if (tick >= 10) {
       tick = 1
     }
+
+    notificationTicks += 1
+    if (notificationTicks >= 300) {
+      this.clearNotification()
+    }
   }
   
   def hasLevelEnded = this.enemies.length == 0
-  
+
   def onMouseClick(src: Component, point: Point) = {
     println(point)
     val tower = this.getSelectedTower(point)
     
-    if (this.selectingTower != 0 && gameArea.isPointOutsidePath(point) && player.hasCoinsToBuyTower(tower.get)) {
-      this.placeTower(tower.get)
-      this.selectingTower = 0
+    if (this.selectingTower != 0) {
+      this.tryToPlaceTower(point, tower.get)
     }
   }
   
+  def tryToPlaceTower(point: Point, tower: Tower) = {
+    // Check if possible to place tower here and with the current state
+    if (!player.hasCoinsToBuyTower(tower)) {
+      this.newNotification("Not enough coins to buy this tower")
+    } else if (!gameArea.isPointOutsidePath(point)) {
+      this.newNotification("Can't place tower here")
+    } else {
+      this.placeTower(tower)
+      this.selectingTower = 0
+    }
+  }
+
+  def clearNotification() = {
+    this.notification = ""
+    this.notificationTicks = 0
+  }
+
+  def newNotification(msg: String) = {
+    this.notification = msg
+    this.notificationTicks = 0
+  }
+
   def selectedTower(towerID: Int) = this.selectingTower = towerID
   
   def placeTower(tower: Tower) = {
@@ -138,6 +161,7 @@ class Game() {
   }
   
   def initEnemies() = {
+    // Initialize the enemy positions to the start of the path
     val totalDistance = gameArea.path.map(p => p.x * Constants.tileWidth).reduce(_ + _)
     val firstTile = gameArea.path(0)
 
@@ -180,7 +204,8 @@ class Game() {
   }
   
   def moveEnemies() = {
-    val enemiesReachedEnd = Buffer()
+    val enemiesThatReachedEnd = Buffer[Int]()
+
     this.enemies.zipWithIndex.foreach(pair => {
       val enemy = pair._1
       if (!isLastTileForEnemy(enemy)) {
@@ -217,7 +242,8 @@ class Game() {
           enemy.pathPosition += 1
         }
       } else if (isLastTileForEnemy(enemy) && enemy.hasReachedEnd) {
-        this.enemyDidReachEndOfPath(pair._2)
+        // Should never remove from array while looping so we store the to-be-deleted indexes.
+        enemiesThatReachedEnd += pair._2
       }
       
       val move = enemy.direction match {
@@ -229,6 +255,8 @@ class Game() {
       
       enemy.move(move._1, move._2)
     })
+    
+    enemiesThatReachedEnd.zipWithIndex.foreach(p => this.enemyDidReachEndOfPath(p._1 - p._2))
   }
   
   def shootTowers(tick: Int) = {

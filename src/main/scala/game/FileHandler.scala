@@ -27,8 +27,9 @@ class FileHandler(val game: Game) {
     )
     
     val saveFileAsJSON = Json.prettyPrint(saveJson)
+    println("SAVE FILE START")
     println(saveFileAsJSON)
-
+    println("END OF SAVE FILE")
     val outputFile = new File(Paths.get(".").toAbsolutePath + "/save_file_1.json")
     val writer = new BufferedWriter(new FileWriter(outputFile))
     writer.write(saveFileAsJSON)

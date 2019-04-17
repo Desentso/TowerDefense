@@ -9,7 +9,7 @@ class Level(private val baseReward: Int, private val rewardMultiplier: Double) {
   val enemySpeedMultiplier: Double = 1.02
   val enemyHealthMultiplier: Double = 1.05
   
-  //(noOfEnemies, health, speed, noOfSuperEnemies)
+  // In format: (noOfEnemies, health, speed, noOfSuperEnemies)
   val baseValues = Map(
     1 -> (100, 100, 1.0, 1),
     5 -> (400, 250, 1.05, 3),
@@ -30,12 +30,12 @@ class Level(private val baseReward: Int, private val rewardMultiplier: Double) {
     val next5 = if (nearest5 == 1) 5 else nearest5 + 5
     
     val (baseNoOfEnemies, baseHealth, baseSpeed, baseNoOfSuperEnemies) = baseValues(nearest5)
-    val (baseNoOfEnemies2, baseHealth2, baseSpeed2, baseNoOfSuperEnemies2) = baseValues(next5)
+    val (baseNoOfEnemiesNext, baseHealthNext, baseSpeedNext, baseNoOfSuperEnemiesNext) = baseValues(next5)
     
-    val noOfEnemies = baseNoOfEnemies + (((baseNoOfEnemies2 - baseNoOfEnemies) / 5) * (if (ones < 5) ones else ones - 5))
-    val health = baseHealth + (((baseHealth2 - baseHealth) / 5) * (if (ones < 5) ones else ones - 5))
-    val speed = baseSpeed + (((baseSpeed2 - baseSpeed) / 5) * (if (ones < 5) ones else ones - 5))
-    val noOfSuperEnemies = baseNoOfSuperEnemies + (((baseNoOfSuperEnemies2 - baseNoOfSuperEnemies) / 5) * (if (ones < 5) ones else ones - 5))
+    val noOfEnemies = baseNoOfEnemies + (((baseNoOfEnemiesNext - baseNoOfEnemies) / 5) * (if (ones < 5) ones else ones - 5))
+    val health = baseHealth + (((baseHealthNext - baseHealth) / 5) * (if (ones < 5) ones else ones - 5))
+    val speed = baseSpeed + (((baseSpeedNext - baseSpeed) / 5) * (if (ones < 5) ones else ones - 5))
+    val noOfSuperEnemies = baseNoOfSuperEnemies + (((baseNoOfSuperEnemiesNext - baseNoOfSuperEnemies) / 5) * (if (ones < 5) ones else ones - 5))
     println("NEW LEVEL: ", this.currentLevel, noOfEnemies, health, speed, noOfSuperEnemies )
     (noOfEnemies, health, speed, noOfSuperEnemies)
     //baseValues(nearest5)

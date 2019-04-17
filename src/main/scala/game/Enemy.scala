@@ -10,7 +10,6 @@ class Enemy(initSpeed: Double = 1.0, initHealth: Int = 150) {
   
   def shoot(damageDealt: Int) = {
     this.health -= damageDealt
-    //println("Shot enemy, health:", this.health)
   }
   
   def move(x: Int, y: Int, noSpeed: Boolean = false) = {

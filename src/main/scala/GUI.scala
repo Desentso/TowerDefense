@@ -10,8 +10,7 @@ import game._
 
 object GUI extends SimpleSwingApplication {
 
-  val game = new Game()
-  var state = game.currentState
+  var game = new Game()
   
   def top = new MainFrame {
     
@@ -28,10 +27,11 @@ object GUI extends SimpleSwingApplication {
     minimumSize = new Dimension(width, height)
     preferredSize = new Dimension(width, height)
     maximumSize = new Dimension(width, height)
-    
+
     val startGameBtn = new Button("Start Game")
     val loadGameBtn = new Button("Load Game")
     val exitGameBtn = new Button("Exit")
+    val playAgainBtn = new Button("Play Again")
     val tower1Btn = new Button("Tower 1")
     val tower2Btn = new Button("Tower 2")
     val tower3Btn = new Button("Tower 3")
@@ -39,12 +39,22 @@ object GUI extends SimpleSwingApplication {
     val tower5Btn = new Button("Tower 5")
     val changeSpeedBtn = new Button(">")
     val notificationsLabel = new Label("")
-
-    def startScreen: BoxPanel = new BoxPanel(Orientation.Vertical) {
+    
+    /*val startScreenButtons: BoxPanel = new BoxPanel(Orientation.Horizontal) {
       contents += startGameBtn
       contents += loadGameBtn
       contents += exitGameBtn
-      contents += notificationsLabel
+    }*/
+
+    val startScreen = new BoxPanel(Orientation.Vertical) {
+      val startScreenButtons: BoxPanel = new BoxPanel(Orientation.Horizontal) {
+        contents += startGameBtn
+        contents += loadGameBtn
+        contents += exitGameBtn
+      }
+      contents += new BoxPanel(Orientation.Horizontal) {contents += new Label("<html><br><br><br><br><h1>Tower Defense Game</h1><br><br><br><br></html>")}
+      contents += startScreenButtons
+      contents += new BoxPanel(Orientation.Horizontal) {contents += notificationsLabel}
     }
     
     class GamePanel extends Panel {
@@ -73,29 +83,25 @@ object GUI extends SimpleSwingApplication {
         })
       }
     }
-    
-    val gameScreenButtons: BoxPanel = new BoxPanel(Orientation.Horizontal) {
-      val exitGameBtn = new Button("Exit") // The other exit game btn is empty/garbage collected(?) after contents change
-      
-      contents += exitGameBtn
-      contents += tower1Btn
-      contents += tower2Btn
-      contents += tower3Btn
-      contents += tower4Btn
-      contents += tower5Btn
-      contents += changeSpeedBtn
-      
-      listenToBtn(exitGameBtn)
-    }
-    
+
     val levelLabel = new Label("Level: " + (game.levelHandler.currentLevel))
     val healthLabel = new Label("   Health: " + game.player.health)
     val coinsLabel = new Label("   Coins: " + game.player.coins)
+    val selectedTowerLabel = new Label("<html><br></html>")
     
     def updateLabels() = {
       levelLabel.text = "Level: " + (game.levelHandler.currentLevel) 
       healthLabel.text = "   Health: " + game.player.health
       coinsLabel.text = "   Coins: " + game.player.coins
+      val selectingTower = game.towerHandler.getTower(game.selectingTower)
+      selectedTowerLabel.text = if (selectingTower == None) "<html><br><br><br><br><br><br></html>" else (
+        "<html><br>" + 
+        "Tower " + selectingTower.get.towerType + 
+        "<br><br>Cost: " + selectingTower.get.cost + " coins" + 
+        "<br>Damage: " + selectingTower.get.damage + 
+        "<br>Rate of fire: " + selectingTower.get.rateOfFire +
+        "<br></html>"
+      )
     }
 
     def newNotification(notificationText: String) = {
@@ -108,20 +114,52 @@ object GUI extends SimpleSwingApplication {
       contents += coinsLabel
       contents += notificationsLabel
     }
+
+    val gameScreenButtons: BoxPanel = new BoxPanel(Orientation.Horizontal) {
+      //val exitGameBtn = new Button("Exit") // The other exit game btn is empty/garbage collected(?) after contents change
+      
+      //contents += exitGameBtn
+      contents += tower1Btn
+      contents += tower2Btn
+      contents += tower3Btn
+      contents += tower4Btn
+      contents += tower5Btn
+      contents += changeSpeedBtn
+      
+      //listenToBtn(exitGameBtn)
+    }
     
+    val towerInfoPanel = new BoxPanel(Orientation.Horizontal) {
+      contents += selectedTowerLabel
+    }
+
+    val bottomInfoPanel = new BoxPanel(Orientation.Horizontal) {
+      contents += gameScreenButtons
+      contents += towerInfoPanel
+    }
+
     val gameScreen: BoxPanel = new BoxPanel(Orientation.Vertical) {
       contents += gameScreenLabels
       contents += new GamePanel()
-      contents += gameScreenButtons
+      contents += bottomInfoPanel
     }
     
+    val gameOverScreenButtons = new BoxPanel(Orientation.Horizontal) {
+      contents += playAgainBtn
+      contents += exitGameBtn
+    }
+
+    val gameOverScreen = new BoxPanel(Orientation.Vertical) {
+      contents += new Label("<html><br><br><br><br><h1>Game over!</h1><br><br><h3>You reached level " + game.levelHandler.currentLevel +  "</h3><br><br></html>")
+      contents += gameOverScreenButtons
+    }
+
     val container: BoxPanel = new BoxPanel(Orientation.Vertical) {
       contents += startScreen
     }
 
     def startGame() = {
       game.startGame()
-      state = game.currentState
 
       container.contents -= startScreen
       container.contents += gameScreen
@@ -138,6 +176,7 @@ object GUI extends SimpleSwingApplication {
     this.listenTo(startGameBtn)
     this.listenTo(loadGameBtn)
     this.listenTo(exitGameBtn)
+    this.listenTo(playAgainBtn)
     this.listenTo(tower1Btn)
     this.listenTo(tower2Btn)
     this.listenTo(tower3Btn)
@@ -164,6 +203,11 @@ object GUI extends SimpleSwingApplication {
             } else {
               newNotification("There was an error while loading the game. You have to either fix the save file manually or start a new game.")
             }
+          }
+          case "Play Again" => {
+            game = new Game()
+            container.contents -= gameOverScreen
+            startGame()
           }
           case "Tower 1" => {
             game.selectedTower(1)
@@ -209,11 +253,11 @@ object GUI extends SimpleSwingApplication {
     
     val gameLoopEventListener = new ActionListener(){
       def actionPerformed(e : java.awt.event.ActionEvent) = {
-        state = game.currentState
-        
+
         gameScreen.revalidate()
         gameScreen.repaint()
 
+        newNotification(game.notification)
         updateLabels()
         
         game.onTick()
@@ -221,7 +265,13 @@ object GUI extends SimpleSwingApplication {
         if (game.isGameOver) {
           (e.getSource.asInstanceOf[javax.swing.Timer]).stop()
           // Render game over screen
-          
+          container.contents -= gameScreen
+          container.contents += gameOverScreen
+
+          container.revalidate()
+          container.repaint()
+
+          top.repaint()
         }
       }
     }
@@ -229,7 +279,6 @@ object GUI extends SimpleSwingApplication {
     // This calls the gameLoopEventListener every 16ms
     // Which allows animation and dynamic screens
     var gameLoop = new javax.swing.Timer(16, gameLoopEventListener)
-    //gameLoop.start()
   }
 }
 
