@@ -87,7 +87,6 @@ object GUI extends SimpleSwingApplication {
         
         GameArea.draw(game.gameArea.getArea, g, Constants.gameAreaWidth, Constants.gameAreaHeight)
         
-        //g.setBackground()
         g.setColor(Constants.enemyColor)
         game.enemies.foreach(enemy => {
           val enemyX = math.round(enemy.position.x).toInt
@@ -102,7 +101,15 @@ object GUI extends SimpleSwingApplication {
         g.setColor(Constants.towerColor)
         game.towers.foreach(tower => {
           g.fillRect(tower.position.x - (Constants.towerSize / 2), tower.position.y - (Constants.towerSize), Constants.towerSize, Constants.towerSize)
-          g.drawOval(tower.position.x - tower.range, tower.position.y - tower.range, tower.range * 2, tower.range * 2)
+          g.drawOval(tower.position.x - tower.range, tower.position.y - tower.range - (Constants.towerSize / 2), tower.range * 2, tower.range * 2)
+        })
+
+        g.setColor(Constants.specialColor)
+        game.specials.foreach(special => {
+          g.fillRect(special.position.x - (Constants.specialSize / 2), special.position.y - (Constants.specialSize), Constants.specialSize, Constants.specialSize)
+          if (special.isExploding) {
+            g.fillOval(special.position.x - special.range, special.position.y - special.range - (Constants.specialSize / 2), special.range * 2, special.range * 2)
+          }
         })
       }
     }
@@ -217,6 +224,7 @@ object GUI extends SimpleSwingApplication {
 
     def playAgain() = {
       game = new Game()
+      container.contents -= gameWonScreen
       container.contents -= gameOverScreen
       startGame()
     }
@@ -256,23 +264,18 @@ object GUI extends SimpleSwingApplication {
           }
           case "Tower 1" => {
             game.selectedTower(1)
-            println("Selected tower 1")
           }
           case "Tower 2" => {
             game.selectedTower(2)
-            println("Selected tower 2")
           }
           case "Tower 3" => {
             game.selectedTower(3)
-            println("Selected tower 3")
           }
           case "Tower 4" => {
             game.selectedTower(4)
-            println("Selected tower 4")
           }
           case "Tower 5" => {
             game.selectedTower(5)
-            println("Selected tower 5")
           }
           case "Special" => {
             game.selectedSpecial()
@@ -322,9 +325,7 @@ object GUI extends SimpleSwingApplication {
           container.repaint()
 
           top.repaint()
-        }
-
-        if (game.isGameOver) {
+        } else if (game.isGameOver) {
           (e.getSource.asInstanceOf[javax.swing.Timer]).stop()
           // Render game over screen
           updateGameOverLabel()

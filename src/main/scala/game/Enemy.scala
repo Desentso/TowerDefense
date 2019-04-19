@@ -8,7 +8,7 @@ class Enemy(initSpeed: Double = 1.0, initHealth: Int = 150) {
   var pathPosition: Int = 0
   var direction = Direction.none
   
-  def shoot(damageDealt: Int) = {
+  def doDamage(damageDealt: Int) = {
     this.health -= damageDealt
   }
   
@@ -30,5 +30,5 @@ class Enemy(initSpeed: Double = 1.0, initHealth: Int = 150) {
 }
 
 object DummyEnemy extends Enemy {
-  override def shoot(dmg: Int) = health -= dmg
+  override def doDamage(dmg: Int) = health -= dmg
 }

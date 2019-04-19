@@ -8,7 +8,8 @@ object Constants {
   val fillColor: Color = new Color(14, 146, 60)
   val enemyColor: Color = Color.RED
   val towerColor: Color = Color.BLUE
-  
+  val specialColor: Color = Color.ORANGE
+
   val gameAreaWidth: Int = 800
   val gameAreaHeight: Int = 560
   
@@ -17,6 +18,7 @@ object Constants {
   
   val enemySize: Int = 10
   val towerSize: Int = 30
+  val specialSize: Int = 15
 
   val defaultStartHealth: Int = 250
   val defaultStartCoins: Int = 1000

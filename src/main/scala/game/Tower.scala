@@ -2,26 +2,34 @@ package game
 
 import play.api.libs.json._
 
-class Tower(val damage: Int, val range: Int, val rateOfFire: Double, val cost: Int, val towerType: String, val position: Coords, val game: Game) {
-  
-  def shoot(tick: Int) = {
-    if (tick % (10.0 / (rateOfFire * 10)) < 1) {
-      val enemies = this.enemiesInRange
-      enemies.lift(0).getOrElse(DummyEnemy).shoot(this.damage)
-    }
-  }
-  
-  def enemiesInRange: Vector[Enemy] = {
-    this.game.enemies
+trait DoesDamage {
+  // Tower and Special implement this trait
+  val damage: Int
+  val range: Int
+  val cost: Int
+  val position: Coords
+
+  def enemiesInRange(enemies: Vector[Enemy]): Vector[Enemy] = {
+    enemies
       .filter(enemy => math.sqrt(math.pow(this.position.x - enemy.position.x, 2) + math.pow(this.position.y - enemy.position.y, 2)) < this.range)
       .sortBy(enemy => enemy.distanceToGoal)
       .toVector
   }
 }
 
+class Tower(val damage: Int, val range: Int, val rateOfFire: Double, val cost: Int, val towerType: String, val position: Coords, val game: Game) extends DoesDamage {
+  
+  def shoot(tick: Int) = {
+    if (tick % (10.0 / (rateOfFire * 10)) < 1) {
+      val enemies = this.enemiesInRange(this.game.enemies.toVector)
+      enemies.lift(0).getOrElse(DummyEnemy).doDamage(this.damage)
+    }
+  }
+}
+
 class TowerConf(val range: Int, val damage: Int, val cost: Int, val rateOfFire: Double) {}
 
-class Towers(val game: Game, towersAsJson: List[JsValue]) {
+class TowerHandler(val game: Game, towersAsJson: List[JsValue]) {
 
   val towers: Map[Int, TowerConf] = towersAsJson.zipWithIndex.map(p => {
     val tower = p._1

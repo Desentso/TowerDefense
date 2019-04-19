@@ -8,7 +8,11 @@ class Player(var health: Int, var coins: Int) {
   def towerBought(tower: Tower) = this.coins -= tower.cost
   
   def hasCoinsToBuyTower(tower: Tower) = this.coins >= tower.cost
-  
+
+  def specialBought(special: Special) = this.coins -= special.cost
+
+  def hasCoinsToBuySpecial(special: Special) = this.coins >= special.cost
+
   def isAlive = this.health > 0
   
   def addCoins(coins: Int) = this.coins += coins

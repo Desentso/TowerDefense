@@ -14,7 +14,7 @@ class Game() {
 
   val levelHandler: Level = new Level(levelCompleteReward, levelCompleteIncreaseRate)
   val player: Player = new Player(startHealth, startCoins)
-  val towerHandler: Towers = new Towers(this, towersAsJson)
+  val towerHandler: TowerHandler = new TowerHandler(this, towersAsJson)
 
   val gameArea = new GameArea()
   var enemies = Buffer[Enemy]()
@@ -88,18 +88,15 @@ class Game() {
   }
   
   def onTick() = {
-    // This function is called every "tick", basically every 16ms or 8ms
+    // This function is called every "tick" by the GUI, basically every 16ms or 8ms
     // Handles the core game logic
     this.filterDeadEnemies()
     this.moveEnemies()
     this.shootTowers(tick)
-    
+    this.explodeSpecials()
+
     if (this.hasLevelEnded) {
-      this.player.addCoins(this.levelHandler.getReward())
-      this.levelHandler.nextLevel()
-      this.enemies = this.levelHandler.getEnemies()
-      this.initEnemies()
-      this.saveGame()
+      this.onLevelEnd()
     }
 
     tick += 1
@@ -108,9 +105,18 @@ class Game() {
     }
 
     notificationTicks += 1
-    if (notificationTicks >= 300) {
+    if (notificationTicks >= 200) {
       this.clearNotification()
     }
+  }
+
+  def onLevelEnd() = {
+    // All the logic that should have happen at the end of each level
+    this.player.addCoins(this.levelHandler.getReward())
+    this.levelHandler.nextLevel()
+    this.enemies = this.levelHandler.getEnemies()
+    this.initEnemies()
+    this.saveGame()
   }
 
   def isGameOver = !this.player.isAlive
@@ -133,14 +139,20 @@ class Game() {
 
   def onMouseClick(src: Component, point: Point) = {
     println(point)
-    val tower = this.getSelectedTower(point)
-    
+
     if (this.selectingTower != 0) {
+      val tower = this.getSelectedTower(point)
       this.tryToPlaceTower(point, tower.get)
+    } else if (this.selectingSpecial) {
+      val special = new Special(point)
+      this.tryToPlaceSpecial(point, special)
     }
   }
 
-  def selectedTower(towerID: Int) = this.selectingTower = towerID
+  def selectedTower(towerID: Int) = {
+    this.selectingTower = towerID
+    this.selectingSpecial = false
+  }
   def selectedSpecial() = {
     this.selectingSpecial = true
     this.selectingTower = 0
@@ -150,7 +162,7 @@ class Game() {
     // Check if possible to place tower here and with the current state
     if (!player.hasCoinsToBuyTower(tower)) {
       this.newNotification("Not enough coins to buy this tower")
-    } else if (!gameArea.isPointOutsidePath(point)) {
+    } else if (!gameArea.isPointInsidePath(point) || gameArea.isPointOutSideArea(point)) {
       this.newNotification("Can't place tower here")
     } else {
       this.placeTower(tower)
@@ -158,9 +170,26 @@ class Game() {
     }
   }
 
+  def tryToPlaceSpecial(point: Point, special: Special) = {
+    // Check if possible to place special here and with the current state
+    if (!player.hasCoinsToBuySpecial(special)) {
+      this.newNotification("Not enough coins to buy special")
+    } else if (gameArea.isPointInsidePath(point)) {
+      this.newNotification("Can't place special here")
+    } else {
+      this.placeSpecial(special)
+      this.selectingSpecial = false
+    }
+  }
+
   def placeTower(tower: Tower) = {
     towers += tower
     player.towerBought(tower)
+  }
+
+  def placeSpecial(special: Special) = {
+    specials += special
+    player.specialBought(special)
   }
   
   def getSelectedTower(point: Point): Option[Tower] = {
@@ -194,7 +223,7 @@ class Game() {
   }
   
   private def getEnemyFirstDirection(enemy: Enemy) = {
-    // Get the first direction for enemy, based on the first tile and second tile
+    // Get the first direction for enemy, based on the first and second tile of the path
     val firstTile = gameArea.path(0)
     val secondTile = gameArea.path(1)
     
@@ -275,6 +304,10 @@ class Game() {
   
   def shootTowers(tick: Int) = {
     this.towers.foreach(tower => tower.shoot(tick))
+  }
+
+  def explodeSpecials() = {
+    this.specials = this.specials.filter(special => !special.explode(this.enemies.toVector))
   }
   
 }
