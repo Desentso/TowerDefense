@@ -96,6 +96,13 @@ object GUI extends SimpleSwingApplication {
           g.fillRect(enemyX - (Constants.enemySize / 2) - 1, enemyY - (Constants.enemySize / 2) - 1, Constants.enemySize + 2, Constants.enemySize + 2)
           g.setColor(Constants.enemyColor)
           g.fillRect(enemyX - (Constants.enemySize / 2), enemyY - (Constants.enemySize / 2), Constants.enemySize, Constants.enemySize)
+          
+          // Draw enemy health bars
+          if (enemy.health < enemy.initHealth) {
+            g.setColor(Color.GREEN)
+            g.fillRect(enemyX - (Constants.enemySize / 2), enemyY - (Constants.enemySize / 2) - 5, (Constants.enemySize * ((enemy.health * 1.0) / enemy.initHealth)).toInt, 3)
+          }
+
         })
         
         g.setColor(Constants.towerColor)
@@ -107,6 +114,7 @@ object GUI extends SimpleSwingApplication {
         g.setColor(Constants.specialColor)
         game.specials.foreach(special => {
           g.fillRect(special.position.x - (Constants.specialSize / 2), special.position.y - (Constants.specialSize), Constants.specialSize, Constants.specialSize)
+          // Draw the explosion
           if (special.isExploding) {
             g.fillOval(special.position.x - special.range, special.position.y - special.range - (Constants.specialSize / 2), special.range * 2, special.range * 2)
           }
@@ -246,7 +254,7 @@ object GUI extends SimpleSwingApplication {
 
     // Listen to game area clicks
     this.listenTo(gameScreen.mouse.clicks)
-    
+
     this.reactions += {
       case btnClicked: ButtonClicked => {
         val sourceBtn = btnClicked.source

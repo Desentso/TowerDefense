@@ -35,4 +35,11 @@ object Constants {
     Json.obj("cost" -> 1000, "damage" -> 50, "rateOfFire" -> 0.1, "range" -> 400),
     Json.obj("cost" -> 2500, "damage" -> 20, "rateOfFire" -> 1.0, "range" -> 250)
   )
+
+  val defaultSpecial: JsValue = Json.obj(
+    "cost" -> 50,
+    "damage" -> 50,
+    "range" -> 50,
+    "ticksBeforeExplode" -> 200
+  )
 }

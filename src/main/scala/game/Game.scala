@@ -8,13 +8,23 @@ import play.api.libs.json._
 class Game() {
   private val fileHandler = new FileHandler(this)
 
-  val (startHealth, startCoins, levelCompleteReward, levelCompleteIncreaseRate, enemyKilledReward, levelRequiredForWin, towersAsJson) = this.loadConfiguration()
+  val (
+    startHealth, 
+    startCoins, 
+    levelCompleteReward, 
+    levelCompleteIncreaseRate, 
+    enemyKilledReward, 
+    levelRequiredForWin, 
+    towersAsJson, 
+    specialAsJson
+  ) = this.loadConfiguration()
 
   private val random = new scala.util.Random
 
   val levelHandler: Level = new Level(levelCompleteReward, levelCompleteIncreaseRate)
   val player: Player = new Player(startHealth, startCoins)
   val towerHandler: TowerHandler = new TowerHandler(this, towersAsJson)
+  val specialHandler: SpecialHandler = new SpecialHandler(specialAsJson)
 
   val gameArea = new GameArea()
   var enemies = Buffer[Enemy]()
@@ -37,10 +47,20 @@ class Game() {
     val levelCompleteReward: Int = (confJson \ "levelCompleteReward").asOpt[Int].getOrElse(Constants.defaultLevelCompleteReward)
     val levelCompleteIncreaseRate: Double = (confJson \ "levelCompleteIncreaseRate").asOpt[Double].getOrElse(Constants.defaultLevelCompleteIncreaseRate)
     val enemyKilledReward: Int = (confJson \ "enemyKilledReward").asOpt[Int].getOrElse(Constants.defaultEnemyKilledReward)
-    val towersAsJson: List[JsValue] = (confJson \ "towers").asOpt[List[JsValue]].getOrElse(Constants.defaultTowerConf)
     val levelRequiredForWin: Int = (confJson \ "levelRequiredForWin").asOpt[Int].getOrElse(Constants.defaultLevelRequiredForWin)
+    val towersAsJson: List[JsValue] = (confJson \ "towers").asOpt[List[JsValue]].getOrElse(Constants.defaultTowerConf)
+    val specialAsJson: JsValue = (confJson \ "special").asOpt[JsValue].getOrElse(Constants.defaultSpecial)
 
-    (startHealth, startCoins, levelCompleteReward, levelCompleteIncreaseRate, enemyKilledReward, levelRequiredForWin, towersAsJson)
+    (
+      startHealth, 
+      startCoins, 
+      levelCompleteReward, 
+      levelCompleteIncreaseRate, 
+      enemyKilledReward, 
+      levelRequiredForWin, 
+      towersAsJson, 
+      specialAsJson
+    )
   }
   
   def loadGame(): Boolean = {
@@ -144,7 +164,7 @@ class Game() {
       val tower = this.getSelectedTower(point)
       this.tryToPlaceTower(point, tower.get)
     } else if (this.selectingSpecial) {
-      val special = new Special(point)
+      val special = specialHandler.getSpecial(point)
       this.tryToPlaceSpecial(point, special)
     }
   }

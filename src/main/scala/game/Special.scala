@@ -1,19 +1,15 @@
 package game
 
 import java.awt.{ Point }
+import play.api.libs.json._
 
-class Special(point: Point) extends DoesDamage {
+class Special(point: Point, val damage: Int, val cost: Int, val range: Int, val requiredTicks: Int) extends DoesDamage {
   val position = new Coords(point.x, point.y)
-  val damage: Int = 50
-  val cost: Int = 50
-  val range: Int = 50
-
-  val requiredTicks: Int = 200
   var ticks: Int = 0
   var isExploding: Boolean = false
 
   def explode(enemies: Vector[Enemy]): Boolean = {
-    // Either do damage to enemies, show the exploding animation with "isExploding" or increase the ticks i.e. advance time
+    // Either do damage to enemies, show the exploding "animation" with isExploding or increase the ticks i.e. advance time
     if (isExploding && ticks - 10 >= requiredTicks) {
       true
     } else if (!isExploding && ticks >= requiredTicks) {
@@ -30,5 +26,15 @@ class Special(point: Point) extends DoesDamage {
 
   }
 
+}
+
+class SpecialHandler(jsonConf: JsValue) {
+
+  val damage = (jsonConf \ "damage").as[Int]
+  val cost = (jsonConf \ "cost").as[Int]
+  val range = (jsonConf \ "range").as[Int]
+  val requiredTicks = (jsonConf \ "ticksBeforeExplode").as[Int]
+
+  def getSpecial(point: Point) = new Special(point, damage, cost, range, requiredTicks)
 }
 

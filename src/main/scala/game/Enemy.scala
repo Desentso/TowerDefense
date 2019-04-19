@@ -1,6 +1,6 @@
 package game
 
-class Enemy(initSpeed: Double = 1.0, initHealth: Int = 150) {
+class Enemy(initSpeed: Double = 1.0, val initHealth: Int = 150) {
   var position: CoordsD = new CoordsD(0, 0)
   var health: Int = initHealth
   var speed: Double = initSpeed
