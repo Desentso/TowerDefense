@@ -6,11 +6,11 @@ import scala.collection.mutable.Buffer
 import play.api.libs.json._
 
 class Game() {
-  val fileHandler = new FileHandler(this)
+  private val fileHandler = new FileHandler(this)
 
-  val (startHealth, startCoins, levelCompleteReward, levelCompleteIncreaseRate, enemyKilledReward, towersAsJson) = this.loadConfiguration()
+  val (startHealth, startCoins, levelCompleteReward, levelCompleteIncreaseRate, enemyKilledReward, levelRequiredForWin, towersAsJson) = this.loadConfiguration()
 
-  val random = new scala.util.Random
+  private val random = new scala.util.Random
 
   val levelHandler: Level = new Level(levelCompleteReward, levelCompleteIncreaseRate)
   val player: Player = new Player(startHealth, startCoins)
@@ -19,27 +19,29 @@ class Game() {
   val gameArea = new GameArea()
   var enemies = Buffer[Enemy]()
   var towers = Buffer[Tower]()
-  
+  var specials = Buffer[Special]()
+
   var selectingTower = 0
-  var tick = 1
+  var selectingSpecial = false
+  private var tick = 1
   var notification = ""
-  var notificationTicks = 0
+  private var notificationTicks = 0
+
 
   def loadConfiguration() = {
     // Load and setup the game from a configuration file
     val confJson = this.fileHandler.loadConfiguration()
 
-    val startHealth = (confJson \ "startHealth").as[Int]
-    val startCoins = (confJson \ "startCoins").as[Int]
-    val levelCompleteReward = (confJson \ "levelCompleteReward").as[Int]
-    val levelCompleteIncreaseRate = (confJson \ "levelCompleteIncreaseRate").as[Double]
-    val enemyKilledReward = (confJson \ "enemyKilledReward").as[Int]
-    val towersAsJson = (confJson \ "towers").as[List[JsValue]]
+    val startHealth: Int = (confJson \ "startHealth").asOpt[Int].getOrElse(Constants.defaultStartHealth)
+    val startCoins: Int = (confJson \ "startCoins").asOpt[Int].getOrElse(Constants.defaultStartCoins)
+    val levelCompleteReward: Int = (confJson \ "levelCompleteReward").asOpt[Int].getOrElse(Constants.defaultLevelCompleteReward)
+    val levelCompleteIncreaseRate: Double = (confJson \ "levelCompleteIncreaseRate").asOpt[Double].getOrElse(Constants.defaultLevelCompleteIncreaseRate)
+    val enemyKilledReward: Int = (confJson \ "enemyKilledReward").asOpt[Int].getOrElse(Constants.defaultEnemyKilledReward)
+    val towersAsJson: List[JsValue] = (confJson \ "towers").asOpt[List[JsValue]].getOrElse(Constants.defaultTowerConf)
+    val levelRequiredForWin: Int = (confJson \ "levelRequiredForWin").asOpt[Int].getOrElse(Constants.defaultLevelRequiredForWin)
 
-    (startHealth, startCoins, levelCompleteReward, levelCompleteIncreaseRate, enemyKilledReward, towersAsJson)
+    (startHealth, startCoins, levelCompleteReward, levelCompleteIncreaseRate, enemyKilledReward, levelRequiredForWin, towersAsJson)
   }
-  
-  def isGameOver = !this.player.isAlive
   
   def loadGame(): Boolean = {
     // Load and setup the game from save file
@@ -110,8 +112,24 @@ class Game() {
       this.clearNotification()
     }
   }
+
+  def isGameOver = !this.player.isAlive
   
+  def isGameWon = this.currentLevel == levelRequiredForWin
+
   def hasLevelEnded = this.enemies.length == 0
+
+  def currentLevel = this.levelHandler.currentLevel
+
+  def clearNotification() = {
+    this.notification = ""
+    this.notificationTicks = 0
+  }
+
+  def newNotification(msg: String) = {
+    this.notification = msg
+    this.notificationTicks = 0
+  }
 
   def onMouseClick(src: Component, point: Point) = {
     println(point)
@@ -121,7 +139,13 @@ class Game() {
       this.tryToPlaceTower(point, tower.get)
     }
   }
-  
+
+  def selectedTower(towerID: Int) = this.selectingTower = towerID
+  def selectedSpecial() = {
+    this.selectingSpecial = true
+    this.selectingTower = 0
+  }
+
   def tryToPlaceTower(point: Point, tower: Tower) = {
     // Check if possible to place tower here and with the current state
     if (!player.hasCoinsToBuyTower(tower)) {
@@ -134,18 +158,6 @@ class Game() {
     }
   }
 
-  def clearNotification() = {
-    this.notification = ""
-    this.notificationTicks = 0
-  }
-
-  def newNotification(msg: String) = {
-    this.notification = msg
-    this.notificationTicks = 0
-  }
-
-  def selectedTower(towerID: Int) = this.selectingTower = towerID
-  
   def placeTower(tower: Tower) = {
     towers += tower
     player.towerBought(tower)
@@ -182,10 +194,11 @@ class Game() {
   }
   
   private def getEnemyFirstDirection(enemy: Enemy) = {
-    val currentTile = gameArea.path(enemy.pathPosition)
-    val nextTile = gameArea.path(enemy.pathPosition + 1)
+    // Get the first direction for enemy, based on the first tile and second tile
+    val firstTile = gameArea.path(0)
+    val secondTile = gameArea.path(1)
     
-    (nextTile.x - currentTile.x, nextTile.y - currentTile.y) match {
+    (secondTile.x - firstTile.x, secondTile.y - firstTile.y) match {
       case (1, 0) => Direction.right
       case (-1, 0) => Direction.left
       case (0, 1) => Direction.down
@@ -206,6 +219,7 @@ class Game() {
   def moveEnemies() = {
     val enemiesThatReachedEnd = Buffer[Int]()
 
+    // Move enemies based on the enemies' current direction, current tile and next tile on path
     this.enemies.zipWithIndex.foreach(pair => {
       val enemy = pair._1
       if (!isLastTileForEnemy(enemy)) {

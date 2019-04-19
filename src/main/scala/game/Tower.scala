@@ -45,7 +45,4 @@ class Towers(val game: Game, towersAsJson: List[JsValue]) {
       None
     }
   }
-
-
-
 }

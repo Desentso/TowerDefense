@@ -12,5 +12,7 @@
 
   "levelCompleteReward": 100,
   "levelCompleteIncreaseRate": 1.005,
-  "enemyKilledReward": 1
+  "enemyKilledReward": 1,
+
+  "levelRequiredForWin": 2
 }

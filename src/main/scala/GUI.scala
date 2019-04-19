@@ -5,8 +5,9 @@ import scala.io.Source
 import javax.imageio.ImageIO
 import java.awt.image.BufferedImage
 import scala.swing.event._
+import javax.swing.ImageIcon
 import game._
-
+import java.nio.file.Paths
 
 object GUI extends SimpleSwingApplication {
 
@@ -32,19 +33,40 @@ object GUI extends SimpleSwingApplication {
     val loadGameBtn = new Button("Load Game")
     val exitGameBtn = new Button("Exit")
     val playAgainBtn = new Button("Play Again")
+    val changeSpeedBtn = new Button(">")
+
     val tower1Btn = new Button("Tower 1")
     val tower2Btn = new Button("Tower 2")
     val tower3Btn = new Button("Tower 3")
     val tower4Btn = new Button("Tower 4")
     val tower5Btn = new Button("Tower 5")
-    val changeSpeedBtn = new Button(">")
+    val specialBtn = new Button("Special")
+
     val notificationsLabel = new Label("")
+    val levelLabel = new Label("Level: " + (game.currentLevel))
+    val healthLabel = new Label("   Health: " + game.player.health)
+    val coinsLabel = new Label("   Coins: " + game.player.coins)
+    val selectedTowerLabel = new Label("<html><br></html>")
     
-    /*val startScreenButtons: BoxPanel = new BoxPanel(Orientation.Horizontal) {
-      contents += startGameBtn
-      contents += loadGameBtn
-      contents += exitGameBtn
-    }*/
+    def updateLabels() = {
+      levelLabel.text = "Level: " + (game.currentLevel) 
+      healthLabel.text = "   Health: " + game.player.health
+      coinsLabel.text = "   Coins: " + game.player.coins
+      val selectingTower = game.towerHandler.getTower(game.selectingTower)
+      selectedTowerLabel.text = if (selectingTower == None) "<html><br><br><br><br><br><br></html>" else (
+        "<html><br>" + 
+        "Tower " + selectingTower.get.towerType + 
+        "<br><br>Cost: " + selectingTower.get.cost + " coins" + 
+        "<br>Damage: " + selectingTower.get.damage + 
+        "<br>Rate of fire: " + selectingTower.get.rateOfFire +
+        "<br></html>"
+      )
+    }
+
+    def newNotification(notificationText: String) = {
+      notificationsLabel.text = "   " + notificationText
+    }
+
 
     val startScreen = new BoxPanel(Orientation.Vertical) {
       val startScreenButtons: BoxPanel = new BoxPanel(Orientation.Horizontal) {
@@ -57,6 +79,7 @@ object GUI extends SimpleSwingApplication {
       contents += new BoxPanel(Orientation.Horizontal) {contents += notificationsLabel}
     }
     
+
     class GamePanel extends Panel {
 
       override def paintComponent(g: Graphics2D): Unit = {
@@ -78,80 +101,91 @@ object GUI extends SimpleSwingApplication {
         
         g.setColor(Constants.towerColor)
         game.towers.foreach(tower => {
-          g.fillRect(tower.position.x - (Constants.towerSize / 2), tower.position.y - (Constants.towerSize / 2), Constants.towerSize, Constants.towerSize)
+          g.fillRect(tower.position.x - (Constants.towerSize / 2), tower.position.y - (Constants.towerSize), Constants.towerSize, Constants.towerSize)
           g.drawOval(tower.position.x - tower.range, tower.position.y - tower.range, tower.range * 2, tower.range * 2)
         })
       }
     }
 
-    val levelLabel = new Label("Level: " + (game.levelHandler.currentLevel))
-    val healthLabel = new Label("   Health: " + game.player.health)
-    val coinsLabel = new Label("   Coins: " + game.player.coins)
-    val selectedTowerLabel = new Label("<html><br></html>")
-    
-    def updateLabels() = {
-      levelLabel.text = "Level: " + (game.levelHandler.currentLevel) 
-      healthLabel.text = "   Health: " + game.player.health
-      coinsLabel.text = "   Coins: " + game.player.coins
-      val selectingTower = game.towerHandler.getTower(game.selectingTower)
-      selectedTowerLabel.text = if (selectingTower == None) "<html><br><br><br><br><br><br></html>" else (
-        "<html><br>" + 
-        "Tower " + selectingTower.get.towerType + 
-        "<br><br>Cost: " + selectingTower.get.cost + " coins" + 
-        "<br>Damage: " + selectingTower.get.damage + 
-        "<br>Rate of fire: " + selectingTower.get.rateOfFire +
-        "<br></html>"
-      )
-    }
-
-    def newNotification(notificationText: String) = {
-      notificationsLabel.text = "   " + notificationText
-    }
-    
-    val gameScreenLabels: BoxPanel = new BoxPanel(Orientation.Horizontal) {
-      contents += levelLabel
-      contents += healthLabel
-      contents += coinsLabel
-      contents += notificationsLabel
-    }
-
-    val gameScreenButtons: BoxPanel = new BoxPanel(Orientation.Horizontal) {
-      //val exitGameBtn = new Button("Exit") // The other exit game btn is empty/garbage collected(?) after contents change
-      
-      //contents += exitGameBtn
-      contents += tower1Btn
-      contents += tower2Btn
-      contents += tower3Btn
-      contents += tower4Btn
-      contents += tower5Btn
-      contents += changeSpeedBtn
-      
-      //listenToBtn(exitGameBtn)
-    }
-    
-    val towerInfoPanel = new BoxPanel(Orientation.Horizontal) {
-      contents += selectedTowerLabel
-    }
-
-    val bottomInfoPanel = new BoxPanel(Orientation.Horizontal) {
-      contents += gameScreenButtons
-      contents += towerInfoPanel
-    }
 
     val gameScreen: BoxPanel = new BoxPanel(Orientation.Vertical) {
+      val gameScreenLabels: BoxPanel = new BoxPanel(Orientation.Horizontal) {
+        contents += levelLabel
+        contents += healthLabel
+        contents += coinsLabel
+        contents += notificationsLabel
+      }
+
+      val gameScreenButtons: BoxPanel = new BoxPanel(Orientation.Horizontal) {
+        //val exitGameBtn = new Button("Exit") // The other exit game btn is empty/garbage collected(?) after contents change
+        
+        //contents += exitGameBtn
+        contents += tower1Btn
+        contents += tower2Btn
+        contents += tower3Btn
+        contents += tower4Btn
+        contents += tower5Btn
+        contents += specialBtn
+        contents += changeSpeedBtn
+        
+        //listenToBtn(exitGameBtn)
+      }
+      
+      val towerInfoPanel = new BoxPanel(Orientation.Horizontal) {
+        contents += selectedTowerLabel
+      }
+
+      val bottomInfoPanel = new BoxPanel(Orientation.Horizontal) {
+        contents += gameScreenButtons
+        contents += towerInfoPanel
+      }
+
       contents += gameScreenLabels
       contents += new GamePanel()
       contents += bottomInfoPanel
     }
-    
-    val gameOverScreenButtons = new BoxPanel(Orientation.Horizontal) {
-      contents += playAgainBtn
-      contents += exitGameBtn
+
+
+    val gameOverLabel = new Label("")
+    def updateGameOverLabel() = {
+      gameOverLabel.text = ("<html><br><br><br><br><h1>Game over!</h1><br><br><h3>You reached level " + game.currentLevel +  "</h3><br><br></html>")
     }
 
     val gameOverScreen = new BoxPanel(Orientation.Vertical) {
-      contents += new Label("<html><br><br><br><br><h1>Game over!</h1><br><br><h3>You reached level " + game.levelHandler.currentLevel +  "</h3><br><br></html>")
+      val gameOverScreenButtons = new BoxPanel(Orientation.Horizontal) {
+        contents += playAgainBtn
+        contents += exitGameBtn
+      }
+      val gameOverLabelCont = new BoxPanel(Orientation.Horizontal) { 
+        contents += gameOverLabel
+      }
+
+      contents += gameOverLabelCont
       contents += gameOverScreenButtons
+    }
+
+
+    val gameWonLabel = new Label("<html><br><br><br><br><h1>You won!</h1><br><br></html>")
+    val gameWonLabelInfo = new Label("")
+    def updateGameWonLabel() = {
+      gameWonLabelInfo.text = ("<html><h3>You reached level " + game.currentLevel + ", with " + game.player.health + " health left!</h3><br><br></html>")
+    }
+
+    val gameWonScreen = new BoxPanel(Orientation.Vertical) {
+      val gameWonScreenButtons = new BoxPanel(Orientation.Horizontal) {
+        contents += playAgainBtn
+        contents += exitGameBtn
+      }
+      val gameWonLabelCont = new BoxPanel(Orientation.Horizontal) { 
+        contents += gameWonLabel
+      }
+
+      val gameWonLabelInfoCont = new BoxPanel(Orientation.Horizontal) {
+        contents += gameWonLabelInfo
+      }
+      contents += gameWonLabelCont
+      contents += gameWonLabelInfoCont
+      contents += gameWonScreenButtons
     }
 
     val container: BoxPanel = new BoxPanel(Orientation.Vertical) {
@@ -172,6 +206,21 @@ object GUI extends SimpleSwingApplication {
       gameLoop.start()
     }
     
+    def loadGame() = {
+      val loadedSuccesfully = game.loadGame()
+      if (loadedSuccesfully) {
+        startGame()
+      } else {
+        newNotification("There was an error while loading the game. You have to either fix the save file manually or start a new game.")
+      }
+    }
+
+    def playAgain() = {
+      game = new Game()
+      container.contents -= gameOverScreen
+      startGame()
+    }
+
     // Listen to buttons
     this.listenTo(startGameBtn)
     this.listenTo(loadGameBtn)
@@ -182,8 +231,11 @@ object GUI extends SimpleSwingApplication {
     this.listenTo(tower3Btn)
     this.listenTo(tower4Btn)
     this.listenTo(tower5Btn)
+    this.listenTo(specialBtn)
     this.listenTo(changeSpeedBtn)
     
+    tower1Btn.icon = new ImageIcon(Paths.get(".").toAbsolutePath + "/tower1.png")
+
     // Listen to game area clicks
     this.listenTo(gameScreen.mouse.clicks)
     
@@ -197,17 +249,10 @@ object GUI extends SimpleSwingApplication {
             startGame()
           }
           case "Load Game" => {
-            val loadedSuccesfully = game.loadGame()
-            if (loadedSuccesfully) {
-              startGame()
-            } else {
-              newNotification("There was an error while loading the game. You have to either fix the save file manually or start a new game.")
-            }
+            loadGame()
           }
           case "Play Again" => {
-            game = new Game()
-            container.contents -= gameOverScreen
-            startGame()
+            playAgain()
           }
           case "Tower 1" => {
             game.selectedTower(1)
@@ -228,6 +273,9 @@ object GUI extends SimpleSwingApplication {
           case "Tower 5" => {
             game.selectedTower(5)
             println("Selected tower 5")
+          }
+          case "Special" => {
+            game.selectedSpecial()
           }
           case ">" => {
             println("Increase speed")
@@ -262,9 +310,25 @@ object GUI extends SimpleSwingApplication {
         
         game.onTick()
         
+        if (game.isGameWon) {
+          (e.getSource.asInstanceOf[javax.swing.Timer]).stop()
+
+          updateGameWonLabel()
+
+          container.contents -= gameScreen
+          container.contents += gameWonScreen
+
+          container.revalidate()
+          container.repaint()
+
+          top.repaint()
+        }
+
         if (game.isGameOver) {
           (e.getSource.asInstanceOf[javax.swing.Timer]).stop()
           // Render game over screen
+          updateGameOverLabel()
+
           container.contents -= gameScreen
           container.contents += gameOverScreen
 
