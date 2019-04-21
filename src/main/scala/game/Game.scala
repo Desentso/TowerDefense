@@ -36,6 +36,7 @@ class Game() {
   private var tick = 1
   var notification = ""
   private var notificationTicks = 0
+  private var hasWon = false
 
 
   def loadConfiguration() = {
@@ -141,7 +142,14 @@ class Game() {
 
   def isGameOver = !this.player.isAlive
   
-  def isGameWon = this.currentLevel == levelRequiredForWin
+  def isGameWon = {
+    if (this.currentLevel == levelRequiredForWin && !this.hasWon) {
+      this.hasWon = true
+      true
+    } else {
+      false
+    }
+  }
 
   def hasLevelEnded = this.enemies.length == 0
 
@@ -228,17 +236,17 @@ class Game() {
 
     enemies.zipWithIndex.foreach(p => {
       val enemy = p._1
-      val offset = 4 + random.nextInt(12)
+      val offset = 50 + random.nextInt(50)//4 + random.nextInt(12)
       
       val firstDirection = this.getEnemyFirstDirection(enemy)
       if (firstDirection == Direction.right) {
-        enemy.move(-p._2 * offset, ((firstTile.y - 1) * Constants.tileHeight) + (Constants.tileHeight / 2), true)
+        enemy.move((-p._2 * 6) - offset, ((firstTile.y - 1) * Constants.tileHeight) + (Constants.tileHeight / 2), true)
       } else if (firstDirection == Direction.down) {
-        enemy.move(((firstTile.x - 1) * Constants.tileWidth) + (Constants.tileWidth / 2), -p._2 * offset, true)
+        enemy.move(((firstTile.x - 1) * Constants.tileWidth) + (Constants.tileWidth / 2), (-p._2 * 6) - offset, true)
       } 
 
       enemy.direction = firstDirection
-      enemy.distanceToGoal = totalDistance + (p._2 * offset)
+      enemy.distanceToGoal = totalDistance + ((p._2 * 6) + offset)
     })
   }
   

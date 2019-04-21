@@ -33,6 +33,7 @@ object GUI extends SimpleSwingApplication {
     val loadGameBtn = new Button("Load Game")
     val exitGameBtn = new Button("Exit")
     val playAgainBtn = new Button("Play Again")
+    val continueBtn = new Button("Continue")
     val changeSpeedBtn = new Button(">")
 
     val tower1Btn = new Button("Tower 1")
@@ -132,9 +133,6 @@ object GUI extends SimpleSwingApplication {
       }
 
       val gameScreenButtons: BoxPanel = new BoxPanel(Orientation.Horizontal) {
-        //val exitGameBtn = new Button("Exit") // The other exit game btn is empty/garbage collected(?) after contents change
-        
-        //contents += exitGameBtn
         contents += tower1Btn
         contents += tower2Btn
         contents += tower3Btn
@@ -142,8 +140,6 @@ object GUI extends SimpleSwingApplication {
         contents += tower5Btn
         contents += specialBtn
         contents += changeSpeedBtn
-        
-        //listenToBtn(exitGameBtn)
       }
       
       val towerInfoPanel = new BoxPanel(Orientation.Horizontal) {
@@ -189,6 +185,7 @@ object GUI extends SimpleSwingApplication {
     val gameWonScreen = new BoxPanel(Orientation.Vertical) {
       val gameWonScreenButtons = new BoxPanel(Orientation.Horizontal) {
         contents += playAgainBtn
+        contents += continueBtn
         contents += exitGameBtn
       }
       val gameWonLabelCont = new BoxPanel(Orientation.Horizontal) { 
@@ -237,11 +234,24 @@ object GUI extends SimpleSwingApplication {
       startGame()
     }
 
+    def continue() = {
+      container.contents -= gameWonScreen
+      container.contents += gameScreen
+
+      container.revalidate()
+      container.repaint()
+
+      top.repaint()
+
+      gameLoop.start()
+    }
+
     // Listen to buttons
     this.listenTo(startGameBtn)
     this.listenTo(loadGameBtn)
     this.listenTo(exitGameBtn)
     this.listenTo(playAgainBtn)
+    this.listenTo(continueBtn)
     this.listenTo(tower1Btn)
     this.listenTo(tower2Btn)
     this.listenTo(tower3Btn)
@@ -269,6 +279,9 @@ object GUI extends SimpleSwingApplication {
           }
           case "Play Again" => {
             playAgain()
+          }
+          case "Continue" => {
+            continue()
           }
           case "Tower 1" => {
             game.selectedTower(1)
