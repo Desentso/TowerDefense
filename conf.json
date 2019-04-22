@@ -3,10 +3,10 @@
   "startHealth": 250,
 
   "towers": [
-    {"cost": 400, "damage": 10, "rateOfFire": 0.7, "range": 75},
-    {"cost": 500, "damage": 8, "rateOfFire": 0.7, "range": 100},
+    {"cost": 400, "damage": 10, "rateOfFire": 0.7, "range": 90},
+    {"cost": 500, "damage": 8, "rateOfFire": 0.7, "range": 125},
     {"cost": 1000, "damage": 10, "rateOfFire": 0.8, "range": 150},
-    {"cost": 1000, "damage": 50, "rateOfFire": 0.1, "range": 400},
+    {"cost": 1000, "damage": 50, "rateOfFire": 0.2, "range": 400},
     {"cost": 2500, "damage": 20, "rateOfFire": 1, "range": 250}
   ],
 

@@ -228,9 +228,13 @@ object GUI extends SimpleSwingApplication {
     }
 
     def playAgain() = {
+      if (game.isGameOver) {
+        container.contents -= gameOverScreen
+      } else {
+        container.contents -= gameWonScreen
+      }
+      
       game = new Game()
-      container.contents -= gameWonScreen
-      container.contents -= gameOverScreen
       startGame()
     }
 
@@ -264,6 +268,7 @@ object GUI extends SimpleSwingApplication {
 
     // Listen to game area clicks
     this.listenTo(gameScreen.mouse.clicks)
+    this.listenTo(gameScreen.mouse.moves)
 
     this.reactions += {
       case btnClicked: ButtonClicked => {
@@ -319,6 +324,7 @@ object GUI extends SimpleSwingApplication {
         }
       }
       case scala.swing.event.MousePressed(src, point, _, _, _) => game.onMouseClick(src, point)
+      //case scala.swing.event.MouseMoved(src, point, _) => println(point)
     }
     
     contents = container

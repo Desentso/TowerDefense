@@ -1,14 +1,150 @@
 {
-  "level" : 2,
-  "coins" : 600,
+  "level" : 19,
+  "coins" : 1779,
   "healthLeft" : 250,
   "towers" : [ {
-    "type" : "1",
-    "damage" : 10,
-    "range" : 75,
+    "type" : "2",
+    "damage" : 8,
+    "range" : 125,
     "position" : {
-      "x" : 100,
-      "y" : 50
+      "x" : 182,
+      "y" : 211
+    }
+  }, {
+    "type" : "2",
+    "damage" : 8,
+    "range" : 125,
+    "position" : {
+      "x" : 553,
+      "y" : 207
+    }
+  }, {
+    "type" : "2",
+    "damage" : 8,
+    "range" : 125,
+    "position" : {
+      "x" : 383,
+      "y" : 216
+    }
+  }, {
+    "type" : "2",
+    "damage" : 8,
+    "range" : 125,
+    "position" : {
+      "x" : 521,
+      "y" : 212
+    }
+  }, {
+    "type" : "2",
+    "damage" : 8,
+    "range" : 125,
+    "position" : {
+      "x" : 385,
+      "y" : 58
+    }
+  }, {
+    "type" : "2",
+    "damage" : 8,
+    "range" : 125,
+    "position" : {
+      "x" : 284,
+      "y" : 213
+    }
+  }, {
+    "type" : "2",
+    "damage" : 8,
+    "range" : 125,
+    "position" : {
+      "x" : 454,
+      "y" : 213
+    }
+  }, {
+    "type" : "2",
+    "damage" : 8,
+    "range" : 125,
+    "position" : {
+      "x" : 334,
+      "y" : 215
+    }
+  }, {
+    "type" : "2",
+    "damage" : 8,
+    "range" : 125,
+    "position" : {
+      "x" : 242,
+      "y" : 213
+    }
+  }, {
+    "type" : "2",
+    "damage" : 8,
+    "range" : 125,
+    "position" : {
+      "x" : 613,
+      "y" : 352
+    }
+  }, {
+    "type" : "2",
+    "damage" : 8,
+    "range" : 125,
+    "position" : {
+      "x" : 688,
+      "y" : 203
+    }
+  }, {
+    "type" : "2",
+    "damage" : 8,
+    "range" : 125,
+    "position" : {
+      "x" : 145,
+      "y" : 209
+    }
+  }, {
+    "type" : "2",
+    "damage" : 8,
+    "range" : 125,
+    "position" : {
+      "x" : 485,
+      "y" : 212
+    }
+  }, {
+    "type" : "2",
+    "damage" : 8,
+    "range" : 125,
+    "position" : {
+      "x" : 416,
+      "y" : 218
+    }
+  }, {
+    "type" : "2",
+    "damage" : 8,
+    "range" : 125,
+    "position" : {
+      "x" : 308,
+      "y" : 224
+    }
+  }, {
+    "type" : "2",
+    "damage" : 8,
+    "range" : 125,
+    "position" : {
+      "x" : 534,
+      "y" : 71
+    }
+  }, {
+    "type" : "2",
+    "damage" : 8,
+    "range" : 125,
+    "position" : {
+      "x" : 500,
+      "y" : 220
+    }
+  }, {
+    "type" : "2",
+    "damage" : 8,
+    "range" : 125,
+    "position" : {
+      "x" : 355,
+      "y" : 194
     }
   } ]
 }

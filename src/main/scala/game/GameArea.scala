@@ -41,9 +41,9 @@ class GameArea() {
   
   def isPointInsidePath(point: Point) = {
     val tileUnderPoint = this.path
-      .map(tile => new Coords((tile.x-1) * Constants.tileWidth, (tile.y-1) * Constants.tileHeight))
+      .map(tile => new Coords((tile.x - 1) * Constants.tileWidth, (tile.y - 1) * Constants.tileHeight))
       .find(tile => point.x > tile.x && point.x < tile.x + Constants.tileWidth && point.y > tile.y && point.y < tile.y + Constants.tileHeight)
-      
+
     tileUnderPoint == None
   }
 

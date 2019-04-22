@@ -29,8 +29,8 @@ object Constants {
   val defaultLevelRequiredForWin: Int = 50
 
   val defaultTowerConf: List[JsValue] = List(
-    Json.obj("cost" -> 400,  "damage" -> 10, "rateOfFire" -> 0.7, "range" -> 75),
-    Json.obj("cost" -> 500,  "damage" -> 8,  "rateOfFire" -> 0.7, "range" -> 100),
+    Json.obj("cost" -> 400,  "damage" -> 10, "rateOfFire" -> 0.7, "range" -> 90),
+    Json.obj("cost" -> 500,  "damage" -> 8,  "rateOfFire" -> 0.7, "range" -> 125),
     Json.obj("cost" -> 1000, "damage" -> 10, "rateOfFire" -> 0.8, "range" -> 150),
     Json.obj("cost" -> 1000, "damage" -> 50, "rateOfFire" -> 0.1, "range" -> 400),
     Json.obj("cost" -> 2500, "damage" -> 20, "rateOfFire" -> 1.0, "range" -> 250)

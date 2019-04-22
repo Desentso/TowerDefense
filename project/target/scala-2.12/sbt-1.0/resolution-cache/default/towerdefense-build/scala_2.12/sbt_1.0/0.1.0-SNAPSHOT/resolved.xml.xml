@@ -4,7 +4,7 @@
 		module="towerdefense-build"
 		revision="0.1.0-SNAPSHOT"
 		status="integration"
-		publication="20190324143618"
+		publication="20190422210735"
 		e:sbtVersion="1.0" e:scalaVersion="2.12"
 	>
 		<description>

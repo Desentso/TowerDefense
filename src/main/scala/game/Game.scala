@@ -49,7 +49,8 @@ class Game() {
     val levelCompleteIncreaseRate: Double = (confJson \ "levelCompleteIncreaseRate").asOpt[Double].getOrElse(Constants.defaultLevelCompleteIncreaseRate)
     val enemyKilledReward: Int = (confJson \ "enemyKilledReward").asOpt[Int].getOrElse(Constants.defaultEnemyKilledReward)
     val levelRequiredForWin: Int = (confJson \ "levelRequiredForWin").asOpt[Int].getOrElse(Constants.defaultLevelRequiredForWin)
-    val towersAsJson: List[JsValue] = (confJson \ "towers").asOpt[List[JsValue]].getOrElse(Constants.defaultTowerConf)
+    var towersAsJson: List[JsValue] = (confJson \ "towers").asOpt[List[JsValue]].getOrElse(Constants.defaultTowerConf)
+    towersAsJson = if (towersAsJson.length < 5) Constants.defaultTowerConf else towersAsJson
     val specialAsJson: JsValue = (confJson \ "special").asOpt[JsValue].getOrElse(Constants.defaultSpecial)
 
     (
@@ -174,6 +175,8 @@ class Game() {
     } else if (this.selectingSpecial) {
       val special = specialHandler.getSpecial(point)
       this.tryToPlaceSpecial(point, special)
+    } else {
+      //this.isPointInsideTower(point)
     }
   }
 
