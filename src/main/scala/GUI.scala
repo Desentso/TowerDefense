@@ -15,11 +15,7 @@ object GUI extends SimpleSwingApplication {
   
   def top = new MainFrame {
     
-    def listenToBtn(btn: Button) = {
-      this.listenTo(btn)
-    }
-    
-    title = "Tower Defense ABC"
+    title = "Tower Defense"
 
     val width = 800
     val height = 660
@@ -90,35 +86,17 @@ object GUI extends SimpleSwingApplication {
         
         g.setColor(Constants.enemyColor)
         game.enemies.foreach(enemy => {
-          val enemyX = math.round(enemy.position.x).toInt
-          val enemyY = math.round(enemy.position.y).toInt
-          
-          g.setColor(Color.BLACK)
-          g.fillRect(enemyX - (Constants.enemySize / 2) - 1, enemyY - (Constants.enemySize / 2) - 1, Constants.enemySize + 2, Constants.enemySize + 2)
-          g.setColor(Constants.enemyColor)
-          g.fillRect(enemyX - (Constants.enemySize / 2), enemyY - (Constants.enemySize / 2), Constants.enemySize, Constants.enemySize)
-          
-          // Draw enemy health bars
-          if (enemy.health < enemy.initHealth) {
-            g.setColor(Color.GREEN)
-            g.fillRect(enemyX - (Constants.enemySize / 2), enemyY - (Constants.enemySize / 2) - 5, (Constants.enemySize * ((enemy.health * 1.0) / enemy.initHealth)).toInt, 3)
-          }
-
+          EnemyGUI.draw(enemy, g)
         })
         
         g.setColor(Constants.towerColor)
         game.towers.foreach(tower => {
-          g.fillRect(tower.position.x - (Constants.towerSize / 2), tower.position.y - (Constants.towerSize), Constants.towerSize, Constants.towerSize)
-          g.drawOval(tower.position.x - tower.range, tower.position.y - tower.range - (Constants.towerSize / 2), tower.range * 2, tower.range * 2)
+          TowerGUI.draw(tower, g)
         })
 
         g.setColor(Constants.specialColor)
         game.specials.foreach(special => {
-          g.fillRect(special.position.x - (Constants.specialSize / 2), special.position.y - (Constants.specialSize), Constants.specialSize, Constants.specialSize)
-          // Draw the explosion
-          if (special.isExploding) {
-            g.fillOval(special.position.x - special.range, special.position.y - special.range - (Constants.specialSize / 2), special.range * 2, special.range * 2)
-          }
+          SpecialGUI.draw(special, g)
         })
       }
     }
