@@ -2,10 +2,7 @@ import scala.swing._
 import java.awt.event.ActionListener
 import java.awt.{ Point, Rectangle, Color }
 import scala.io.Source
-import javax.imageio.ImageIO
-import java.awt.image.BufferedImage
 import scala.swing.event._
-import javax.swing.ImageIcon
 import game._
 import java.nio.file.Paths
 
@@ -244,7 +241,6 @@ object GUI extends SimpleSwingApplication {
 
     // Listen to game area clicks
     this.listenTo(gameScreen.mouse.clicks)
-    this.listenTo(gameScreen.mouse.moves)
 
     this.reactions += {
       case btnClicked: ButtonClicked => {
@@ -300,7 +296,6 @@ object GUI extends SimpleSwingApplication {
         }
       }
       case scala.swing.event.MousePressed(src, point, _, _, _) => game.onMouseClick(src, point)
-      //case scala.swing.event.MouseMoved(src, point, _) => println(point)
     }
     
     contents = container
