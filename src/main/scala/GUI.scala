@@ -263,8 +263,6 @@ object GUI extends SimpleSwingApplication {
     this.listenTo(tower5Btn)
     this.listenTo(specialBtn)
     this.listenTo(changeSpeedBtn)
-    
-    tower1Btn.icon = new ImageIcon(Paths.get(".").toAbsolutePath + "/tower1.png")
 
     // Listen to game area clicks
     this.listenTo(gameScreen.mouse.clicks)

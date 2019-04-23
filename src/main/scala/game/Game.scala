@@ -16,7 +16,8 @@ class Game() {
     enemyKilledReward, 
     levelRequiredForWin, 
     towersAsJson, 
-    specialAsJson
+    specialAsJson,
+    mapAsVector
   ) = this.loadConfiguration()
 
   private val random = new scala.util.Random
@@ -26,7 +27,7 @@ class Game() {
   val towerHandler: TowerHandler = new TowerHandler(this, towersAsJson)
   val specialHandler: SpecialHandler = new SpecialHandler(specialAsJson)
 
-  val gameArea = new GameArea()
+  val gameArea = new GameArea(mapAsVector)
   var enemies = Buffer[Enemy]()
   var towers = Buffer[Tower]()
   var specials = Buffer[Special]()
@@ -49,9 +50,16 @@ class Game() {
     val levelCompleteIncreaseRate: Double = (confJson \ "levelCompleteIncreaseRate").asOpt[Double].getOrElse(Constants.defaultLevelCompleteIncreaseRate)
     val enemyKilledReward: Int = (confJson \ "enemyKilledReward").asOpt[Int].getOrElse(Constants.defaultEnemyKilledReward)
     val levelRequiredForWin: Int = (confJson \ "levelRequiredForWin").asOpt[Int].getOrElse(Constants.defaultLevelRequiredForWin)
+    val specialAsJson: JsValue = (confJson \ "special").asOpt[JsValue].getOrElse(Constants.defaultSpecial)
+    
     var towersAsJson: List[JsValue] = (confJson \ "towers").asOpt[List[JsValue]].getOrElse(Constants.defaultTowerConf)
     towersAsJson = if (towersAsJson.length < 5) Constants.defaultTowerConf else towersAsJson
-    val specialAsJson: JsValue = (confJson \ "special").asOpt[JsValue].getOrElse(Constants.defaultSpecial)
+    
+    var mapAsVector: Vector[Vector[Int]] = (confJson \ "map").asOpt[Vector[Vector[Int]]].getOrElse(Constants.defaultMap)
+    // Require two rows and at least two cells marked as path
+    mapAsVector = if (mapAsVector.length < 2 || mapAsVector.foldLeft(0)((total, row) => total + row.count(cell => cell == 1)) < 2) Constants.defaultMap else mapAsVector
+    Constants.tileHeight = Constants.gameAreaHeight / mapAsVector.length
+    Constants.tileWidth = Constants.gameAreaWidth / mapAsVector(0).length
 
     (
       startHealth, 
@@ -61,7 +69,8 @@ class Game() {
       enemyKilledReward, 
       levelRequiredForWin, 
       towersAsJson, 
-      specialAsJson
+      specialAsJson,
+      mapAsVector
     )
   }
   
@@ -122,7 +131,7 @@ class Game() {
     }
 
     tick += 1
-    if (tick >= 10) {
+    if (tick >= Constants.rateOfFireGranularity) {
       tick = 1
     }
 
@@ -167,7 +176,6 @@ class Game() {
   }
 
   def onMouseClick(src: Component, point: Point) = {
-    println(point)
 
     if (this.selectingTower != 0) {
       val tower = this.getSelectedTower(point)
@@ -175,8 +183,6 @@ class Game() {
     } else if (this.selectingSpecial) {
       val special = specialHandler.getSpecial(point)
       this.tryToPlaceSpecial(point, special)
-    } else {
-      //this.isPointInsideTower(point)
     }
   }
 
@@ -239,17 +245,17 @@ class Game() {
 
     enemies.zipWithIndex.foreach(p => {
       val enemy = p._1
-      val offset = 50 + random.nextInt(50)//4 + random.nextInt(12)
+      val offset = Constants.spaceBetweenEnemies + random.nextInt(Constants.spaceBetweenEnemies)
       
       val firstDirection = this.getEnemyFirstDirection(enemy)
       if (firstDirection == Direction.right) {
-        enemy.move((-p._2 * 6) - offset, ((firstTile.y - 1) * Constants.tileHeight) + (Constants.tileHeight / 2), true)
+        enemy.move((-p._2 * Constants.spaceBetweenEnemiesMultiplier) - offset, ((firstTile.y - 1) * Constants.tileHeight) + (Constants.tileHeight / 2), true)
       } else if (firstDirection == Direction.down) {
-        enemy.move(((firstTile.x - 1) * Constants.tileWidth) + (Constants.tileWidth / 2), (-p._2 * 6) - offset, true)
+        enemy.move(((firstTile.x - 1) * Constants.tileWidth) + (Constants.tileWidth / 2), (-p._2 * Constants.spaceBetweenEnemiesMultiplier) - offset, true)
       } 
 
       enemy.direction = firstDirection
-      enemy.distanceToGoal = totalDistance + ((p._2 * 6) + offset)
+      enemy.distanceToGoal = totalDistance + ((p._2 * Constants.spaceBetweenEnemiesMultiplier) + offset)
     })
   }
   

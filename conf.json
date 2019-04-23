@@ -10,9 +10,26 @@
     {"cost": 2500, "damage": 20, "rateOfFire": 1, "range": 250}
   ],
 
+  "special": {
+    "cost": 50,
+    "damage": 50,
+    "range": 50,
+    "ticksBeforeExplode": 200
+  },
+
   "levelCompleteReward": 100,
   "levelCompleteIncreaseRate": 1.005,
   "enemyKilledReward": 1,
 
-  "levelRequiredForWin": 2
+  "levelRequiredForWin": 50,
+
+  "map": [
+    [0, 1, 0, 0, 0, 0, 0],
+    [0, 1, 1, 1, 1, 1, 0],
+    [0, 0, 0, 0, 0, 1, 0],
+    [0, 1, 1, 1, 1, 1, 0],
+    [0, 1, 0, 0, 0, 0, 0],
+    [0, 1, 0, 0, 0, 0, 0],
+    [0, 1, 0, 0, 0, 0, 0]
+  ]
 }

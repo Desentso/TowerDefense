@@ -13,12 +13,20 @@ object Constants {
   val gameAreaWidth: Int = 800
   val gameAreaHeight: Int = 560
   
-  val tileWidth: Int = gameAreaWidth / 7
-  val tileHeight: Int = gameAreaHeight / 7
+  // These need to changed by the Game class, based on the map size
+  var tileWidth: Int = gameAreaWidth / 7
+  var tileHeight: Int = gameAreaHeight / 7
   
   val enemySize: Int = 10
   val towerSize: Int = 30
   val specialSize: Int = 15
+
+  val enemyDefaultSpeed: Double = 1.0
+  val enemyDefaultHealth: Int = 150
+  val spaceBetweenEnemies: Int = 50
+  val spaceBetweenEnemiesMultiplier: Int = 6
+
+  val rateOfFireGranularity: Int = 100
 
   val defaultStartHealth: Int = 250
   val defaultStartCoins: Int = 1000
@@ -42,4 +50,19 @@ object Constants {
     "range" -> 50,
     "ticksBeforeExplode" -> 200
   )
+
+
+  // Legend:
+  //  1 is the path enemies use
+  //  0 places that player can place turrets on
+  val defaultMap = Vector(
+    Vector(0, 1, 0, 0, 0, 0, 0),
+    Vector(0, 1, 1, 1, 1, 1, 0),
+    Vector(0, 0, 0, 0, 0, 1, 0),
+    Vector(0, 1, 1, 1, 1, 1, 0),
+    Vector(0, 1, 0, 0, 0, 0, 0),
+    Vector(0, 1, 0, 0, 0, 0, 0),
+    Vector(0, 1, 0, 0, 0, 0, 0),
+  )
+
 }

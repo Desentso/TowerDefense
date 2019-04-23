@@ -1,6 +1,6 @@
 package game
 
-class Enemy(initSpeed: Double = 1.0, val initHealth: Int = 150) {
+class Enemy(initSpeed: Double = Constants.enemyDefaultSpeed, val initHealth: Int = Constants.enemyDefaultHealth) {
   var position: CoordsD = new CoordsD(0, 0)
   var health: Int = initHealth
   var speed: Double = initSpeed
@@ -20,6 +20,7 @@ class Enemy(initSpeed: Double = 1.0, val initHealth: Int = 150) {
     this.distanceToGoal -= (math.abs(x) + math.abs(y))
   }
   
+  // Check if this enemy has reached the end of path, i.e. is out of the game area
   def hasReachedEnd = (
     this.position.y > Constants.gameAreaHeight || 
     this.position.y < 0 || 

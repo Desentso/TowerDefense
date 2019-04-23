@@ -28,6 +28,8 @@ class Special(point: Point, val damage: Int, val cost: Int, val range: Int, val 
 
 }
 
+
+// Handles the correct applying of the configuration file values
 class SpecialHandler(jsonConf: JsValue) {
 
   val damage = (jsonConf \ "damage").as[Int]

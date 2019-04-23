@@ -12,8 +12,6 @@ class FileHandler(val game: Game) {
   
   def saveGame() = {
     try {
-      println("SAVE GAME")
-      
       // Construct the save file json object
       val saveJson: JsValue = Json.obj(
         "level" -> JsNumber(game.levelHandler.currentLevel),

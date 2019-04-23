@@ -5,7 +5,7 @@ import game.Constants
 
 object GameArea {
   
-  def draw(area: Array[Array[Int]], g: Graphics2D, width: Int, height: Int) = {
+  def draw(area: Vector[Vector[Int]], g: Graphics2D, width: Int, height: Int) = {
 
     var x = 0
     var y = 0
